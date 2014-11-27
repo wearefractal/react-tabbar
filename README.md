@@ -2,11 +2,11 @@
 
 <table>
 <tr>
-<td>Package</td><td>react-sidetape</td>
+<td>Package</td><td>react-tabbar</td>
 </tr>
 <tr>
 <td>Description</td>
-<td>Create easy sidetap-style menus</td>
+<td>TabBar component</td>
 </tr>
 <tr>
 <td>Browser Version</td>
