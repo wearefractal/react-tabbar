@@ -1,11 +1,11 @@
 {
-  "name": "react-sidetap",
-  "description": "create sidetap menus",
-  "version": "0.0.2",
-  "homepage": "http://github.com/wearefractal/react-sidetap",
+  "name": "react-tabbar",
+  "description": "create tab bars",
+  "version": "0.0.1",
+  "homepage": "http://github.com/wearefractal/react-tabbar",
   "repository": {
     "type": "git",
-    "url": "git://github.com/wearefractal/react-sidetap.git"
+    "url": "git://github.com/wearefractal/react-tabbar.git"
   },
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./src/index.js",
@@ -19,7 +19,7 @@
     "respond",
     "media query",
     "matchMedia",
-    "sidetap",
+    "tabbar",
     "component"
   ],
 
@@ -56,7 +56,7 @@
   "licenses": [
     {
       "type": "MPL",
-      "url": "http://github.com/wearefractal/react-sidetap/raw/master/LICENSE"
+      "url": "http://github.com/wearefractal/react-tabbar/raw/master/LICENSE"
     }
   ]
 }
