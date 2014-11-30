@@ -22,6 +22,10 @@ var tabbar = ReactCompositeComponent.createClass({
 
   handleTabClick: function(tab){
 
+    if (this.props.onTabChange != null) {
+      this.props.onTabChange(tab, this.props.tabs[tab]);
+    }
+
     this.refs[this.current].getDOMNode().classList.remove('active');
     this.refs[tab].getDOMNode().classList.add('active');
 

@@ -18357,6 +18357,10 @@ var tabbar = ReactCompositeComponent.createClass({
 
   handleTabClick: function(tab){
 
+    if (this.onTabChange != null) {
+      this.onTabChange(tab, this.props.tabs[tab]);
+    }
+
     this.refs[this.current].getDOMNode().classList.remove('active');
     this.refs[tab].getDOMNode().classList.add('active');
 
@@ -18390,7 +18394,7 @@ var tabbar = ReactCompositeComponent.createClass({
       else if (currentTab.icon !== undefined) {
         tabNode = []
 
-        tabNode.push(DOM.i({className: currentTab.icon}));
+        tabNode.push(DOM.span({className: currentTab.icon}));
 
         if (currentTab.displayLabel) {
           tabNode.push(DOM.span(null, currentTab.label))
