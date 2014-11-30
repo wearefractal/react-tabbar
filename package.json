@@ -1,7 +1,7 @@
 {
   "name": "react-tabbar",
   "description": "create tab bars",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "homepage": "http://github.com/wearefractal/react-tabbar",
   "repository": {
     "type": "git",

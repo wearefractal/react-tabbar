@@ -14,19 +14,11 @@ var tabbar = ReactCompositeComponent.createClass({
   displayName: 'TabBar',
   propTypes: types,
 
-  componentWillReceiveProps: function(props){
-    return props;
-  },
-
-  componentWillUnmount: function(){
+  shouldComponentUpdate: function(){
+    return false;
   },
 
   handleTabClick: function(tab){
-
-    if (this.onTabChange != null) {
-      this.onTabChange(tab, this.props.tabs[tab]);
-    }
-
     this.refs[this.current].getDOMNode().classList.remove('active');
     this.refs[tab].getDOMNode().classList.add('active');
 
@@ -34,6 +26,10 @@ var tabbar = ReactCompositeComponent.createClass({
     this.refs[tab+'View'].getDOMNode().classList.add('active');
 
     this.current = tab;
+
+    if (this.props.onTabChange != null) {
+      this.props.onTabChange(tab, this.props.tabs[tab]);
+    }
   },
 
   render: function(){
@@ -100,24 +96,19 @@ var tabbar = ReactCompositeComponent.createClass({
     });
 
     return DOM.div({},
-
-
       DOM.div({className: 'tabbar-main'},
         views
       ),
-
       DOM.div({className: 'tabbar-bar'},
         tabs
       )
-
     );
-
   }
 });
 
 module.exports = tabbar;
 
-},{"react/lib/ReactCompositeComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","react/lib/ReactDOM":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactDOM.js","react/lib/ReactPropTypes":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypes.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"react/lib/ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","react/lib/ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","react/lib/ReactPropTypes":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypes.js"}],"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -182,7 +173,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/CallbackQueue.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -282,7 +273,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 module.exports = CallbackQueue;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/PooledClass.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js":[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -329,7 +320,7 @@ function assign(target, sources) {
 
 module.exports = assign;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/PooledClass.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -445,7 +436,7 @@ var PooledClass = {
 module.exports = PooledClass;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactComponent.js":[function(require,module,exports){
+},{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -888,7 +879,7 @@ var ReactComponent = {
 module.exports = ReactComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactUpdates":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyMirror.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -2328,7 +2319,7 @@ var ReactCompositeComponent = {
 module.exports = ReactCompositeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactContext":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactEmptyComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactErrorUtils":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactErrorUtils.js","./ReactLegacyElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactPerf":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactPropTransferer":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTransferer.js","./ReactPropTypeLocationNames":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./ReactUpdates":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactUpdates.js","./instantiateReactComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyMirror.js","./keyOf":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyOf.js","./mapObject":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/mapObject.js","./monitorCodeUse":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./shouldUpdateReactComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactContext.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactContext":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactEmptyComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactErrorUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactErrorUtils.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactPropTransferer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTransferer.js","./ReactPropTypeLocationNames":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./instantiateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","./mapObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/mapObject.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./shouldUpdateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -2390,7 +2381,7 @@ var ReactContext = {
 
 module.exports = ReactContext;
 
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -2424,7 +2415,7 @@ var ReactCurrentOwner = {
 
 module.exports = ReactCurrentOwner;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactDOM.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -2607,7 +2598,7 @@ var ReactDOM = mapObject({
 module.exports = ReactDOM;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactLegacyElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./mapObject":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/mapObject.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js":[function(require,module,exports){
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./mapObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/mapObject.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -2853,7 +2844,7 @@ ReactElement.isValidElement = function(object) {
 module.exports = ReactElement;
 
 }).call(this,require('_process'))
-},{"./ReactContext":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElementValidator.js":[function(require,module,exports){
+},{"./ReactContext":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js":[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -3121,7 +3112,7 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 
-},{"./ReactCurrentOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocations":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./monitorCodeUse":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/monitorCodeUse.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -3198,7 +3189,7 @@ var ReactEmptyComponent = {
 module.exports = ReactEmptyComponent;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactErrorUtils.js":[function(require,module,exports){
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactErrorUtils.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -3230,7 +3221,7 @@ var ReactErrorUtils = {
 
 module.exports = ReactErrorUtils;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactLegacyElement.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -3477,7 +3468,7 @@ ReactLegacyElementFactory._isLegacyCallWarningEnabled = true;
 module.exports = ReactLegacyElementFactory;
 
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","./monitorCodeUse":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactNativeComponent.js":[function(require,module,exports){
+},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactNativeComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -3550,7 +3541,7 @@ var ReactNativeComponent = {
 module.exports = ReactNativeComponent;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactOwner.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3706,7 +3697,7 @@ var ReactOwner = {
 module.exports = ReactOwner;
 
 }).call(this,require('_process'))
-},{"./emptyObject":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyObject.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPerf.js":[function(require,module,exports){
+},{"./emptyObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyObject.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3790,7 +3781,7 @@ function _noMeasure(objName, fnName, func) {
 module.exports = ReactPerf;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTransferer.js":[function(require,module,exports){
+},{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTransferer.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3957,7 +3948,7 @@ var ReactPropTransferer = {
 module.exports = ReactPropTransferer;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./emptyFunction":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyFunction.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","./joinClasses":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/joinClasses.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./joinClasses":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/joinClasses.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3985,7 +3976,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = ReactPropTypeLocationNames;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js":[function(require,module,exports){
+},{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -4009,7 +4000,7 @@ var ReactPropTypeLocations = keyMirror({
 
 module.exports = ReactPropTypeLocations;
 
-},{"./keyMirror":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyMirror.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypes.js":[function(require,module,exports){
+},{"./keyMirror":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypes.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -4363,7 +4354,7 @@ function getPreciseType(propValue) {
 
 module.exports = ReactPropTypes;
 
-},{"./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocationNames":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js","./deprecated":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/deprecated.js","./emptyFunction":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyFunction.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocationNames":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js","./deprecated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/deprecated.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4653,7 +4644,7 @@ var ReactUpdates = {
 module.exports = ReactUpdates;
 
 }).call(this,require('_process'))
-},{"./CallbackQueue":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactPerf.js","./Transaction":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Transaction.js","./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Transaction.js":[function(require,module,exports){
+},{"./CallbackQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./Transaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4894,7 +4885,7 @@ var Transaction = {
 module.exports = Transaction;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/deprecated.js":[function(require,module,exports){
+},{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/deprecated.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4945,7 +4936,7 @@ function deprecated(namespace, oldName, newName, ctx, fn) {
 module.exports = deprecated;
 
 }).call(this,require('_process'))
-},{"./Object.assign":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/Object.assign.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyFunction.js":[function(require,module,exports){
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -4979,7 +4970,7 @@ emptyFunction.thatReturnsArgument = function(arg) { return arg; };
 
 module.exports = emptyFunction;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyObject.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyObject.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5003,7 +4994,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = emptyObject;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/instantiateReactComponent.js":[function(require,module,exports){
+},{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/instantiateReactComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5117,7 +5108,7 @@ function instantiateReactComponent(element, parentCompositeType) {
 module.exports = instantiateReactComponent;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactEmptyComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactLegacyElement":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactNativeComponent":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/ReactNativeComponent.js","./warning":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js":[function(require,module,exports){
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactEmptyComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactNativeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactNativeComponent.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5174,7 +5165,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
-},{"_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/joinClasses.js":[function(require,module,exports){
+},{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/joinClasses.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5215,7 +5206,7 @@ function joinClasses(className/*, ... */) {
 
 module.exports = joinClasses;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyMirror.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -5270,7 +5261,7 @@ var keyMirror = function(obj) {
 module.exports = keyMirror;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/keyOf.js":[function(require,module,exports){
+},{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5306,7 +5297,7 @@ var keyOf = function(oneKeyObj) {
 
 module.exports = keyOf;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/mapObject.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/mapObject.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5359,7 +5350,7 @@ function mapObject(object, callback, context) {
 
 module.exports = mapObject;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/monitorCodeUse.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -5393,7 +5384,7 @@ function monitorCodeUse(eventName, data) {
 module.exports = monitorCodeUse;
 
 }).call(this,require('_process'))
-},{"./invariant":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js":[function(require,module,exports){
+},{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -5431,7 +5422,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 
 module.exports = shouldUpdateReactComponent;
 
-},{}],"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/warning.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -5476,7 +5467,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = warning;
 
 }).call(this,require('_process'))
-},{"./emptyFunction":"/Users/funkytek/apps/components/react-tabbar/node_modules/react/lib/emptyFunction.js","_process":"/Users/funkytek/apps/components/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}]},{},["./src/index.js"])("./src/index.js")
+},{"./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}]},{},["./src/index.js"])("./src/index.js")
 });
 
 
