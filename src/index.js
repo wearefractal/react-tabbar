@@ -13,19 +13,11 @@ var tabbar = ReactCompositeComponent.createClass({
   displayName: 'TabBar',
   propTypes: types,
 
-  componentWillReceiveProps: function(props){
-    return props;
-  },
-
-  componentWillUnmount: function(){
+  shouldComponentUpdate: function(){
+    return false;
   },
 
   handleTabClick: function(tab){
-
-    if (this.props.onTabChange != null) {
-      this.props.onTabChange(tab, this.props.tabs[tab]);
-    }
-
     this.refs[this.current].getDOMNode().classList.remove('active');
     this.refs[tab].getDOMNode().classList.add('active');
 
@@ -33,6 +25,10 @@ var tabbar = ReactCompositeComponent.createClass({
     this.refs[tab+'View'].getDOMNode().classList.add('active');
 
     this.current = tab;
+
+    if (this.props.onTabChange != null) {
+      this.props.onTabChange(tab, this.props.tabs[tab]);
+    }
   },
 
   render: function(){
@@ -99,18 +95,13 @@ var tabbar = ReactCompositeComponent.createClass({
     });
 
     return DOM.div({},
-
-
       DOM.div({className: 'tabbar-main'},
         views
       ),
-
       DOM.div({className: 'tabbar-bar'},
         tabs
       )
-
     );
-
   }
 });
 
