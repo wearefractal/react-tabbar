@@ -1,17 +1,10 @@
-/* global window */
-
 'use strict';
-var ReactCompositeComponent = require('react/lib/ReactCompositeComponent');
-var DOM = require('react/lib/ReactDOM');
-var PropTypes = require('react/lib/ReactPropTypes');
+var React = require('react');
+var DOM = React.DOM;
+var PropTypes = React.PropTypes;
 
-var types = {
-};
-
-var tabbar = ReactCompositeComponent.createClass({
-
+var tabbar = React.createClass({
   displayName: 'TabBar',
-  propTypes: types,
 
   shouldComponentUpdate: function(){
     return false;
@@ -32,7 +25,6 @@ var tabbar = ReactCompositeComponent.createClass({
   },
 
   render: function(){
-
     var self = this;
     var tabs = [];
     var views = [];
@@ -40,9 +32,7 @@ var tabbar = ReactCompositeComponent.createClass({
     this.current = this.props.default;
 
     // iterate over TABS
-
     Object.keys(this.props.tabs).forEach(function(tab){
-
       var currentTab = self.props.tabs[tab];
       var tabNode, viewNode;
 
@@ -91,16 +81,15 @@ var tabbar = ReactCompositeComponent.createClass({
 
       tabs.push(tabNode);
       views.push(viewNode);
-
     });
 
-    return DOM.div({},
-      DOM.div({className: 'tabbar-main'},
-        views
-      ),
-      DOM.div({className: 'tabbar-bar'},
-        tabs
-      )
+    return DOM.div(null,
+      DOM.div({
+        className: 'tabbar-main'
+      }, views),
+      DOM.div({
+        className: 'tabbar-bar'
+      }, tabs)
     );
   }
 });
