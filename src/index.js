@@ -1,7 +1,6 @@
 'use strict';
 var React = require('react');
 var DOM = React.DOM;
-var PropTypes = React.PropTypes;
 
 var tabbar = React.createClass({
   displayName: 'TabBar',
@@ -38,17 +37,17 @@ var tabbar = React.createClass({
 
       // element specified 
       if (currentTab.el !== undefined) {
-        tabNode = el;
+        tabNode = currentTab.el;
       }
 
       // icon specified 
       else if (currentTab.icon !== undefined) {
-        tabNode = []
+        tabNode = [];
 
         tabNode.push(DOM.span({className: currentTab.icon}));
 
         if (currentTab.displayLabel) {
-          tabNode.push(DOM.span(null, currentTab.label))
+          tabNode.push(DOM.span(null, currentTab.label));
         }
       }
 
@@ -60,7 +59,7 @@ var tabbar = React.createClass({
       // set active tab
       var claz = 'tabbar-tab';
       if (tab === self.current) {
-        claz += ' active'
+        claz += ' active';
       }
 
       tabNode = DOM.div({
@@ -69,9 +68,9 @@ var tabbar = React.createClass({
         onClick: self.handleTabClick.bind(null, tab)
       }, tabNode);
 
-      var viewClaz = 'tabbar-view'
+      var viewClaz = 'tabbar-view';
       if (tab === self.current) {
-        viewClaz += ' active'
+        viewClaz += ' active';
       }
 
       viewNode = DOM.div({
