@@ -76,8 +76,11 @@ var tabbar = React.createClass({
 
       viewNode = DOM.div({
         className: viewClaz,
+        key: tab+'ViewCont',
         ref: tab+'View'
-      }, self.props.tabs[tab].view());
+      }, self.props.tabs[tab].view({
+        key: tab+'View'
+      }));
 
       tabs.push(tabNode);
       views.push(viewNode);
