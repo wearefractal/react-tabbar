@@ -47,13 +47,17 @@ var tabbar = React.createClass({
         tabNode.push(DOM.span({className: currentTab.icon}));
 
         if (currentTab.displayLabel) {
-          tabNode.push(DOM.span(null, currentTab.label));
+          tabNode.push(DOM.span({
+          className: 'tabbar-label'
+        }, currentTab.label));
         }
       }
 
       // just use label
       else {
-        tabNode = DOM.span(null, currentTab.label);
+        tabNode = DOM.span({
+          className: 'tabbar-label'
+        }, currentTab.label);
       }
 
       // set active tab
