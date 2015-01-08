@@ -1,23 +1,23 @@
 /* globals window, document*/
 'use strict';
 
-var TabBar = require('../../../src');
 var React = require('react');
 window.React = React; // for dev
 var DOM = React.DOM;
+var TabBar = React.createFactory(require('../../../src'));
 
 // FRIENDS
 
-var FriendsView = React.createClass({
+var FriendsView = React.createFactory(React.createClass({
   render: function(){
-    return  DOM.div({}, 'FRIENDS');
+    return DOM.div({}, 'FRIENDS');
   }
-});
+}));
 
 
 // FAVORITES
 
-var FavoritesView = React.createClass({
+var FavoritesView = React.createFactory(React.createClass({
   getInitialState: function(){
     return {foo: true}
   },
@@ -29,34 +29,33 @@ var FavoritesView = React.createClass({
 
     return DOM.div({}, 'FAVORITES', DOM.button({onClick: this.handleFavorite}, 'favorte'), DOM.div({}, this.state.foo.toString()));
   }
-});
+}));
 
 // APP
 
-var App = React.createClass({
+var App = React.createFactory(React.createClass({
   displayName: 'demo',
   render: function(){
 
     return TabBar({
-
-      'default': 'favorites',
-
+      defaultTab: 'favorites',
       tabs: {
         friends: {
           label: 'Friends',
           icon: 'fa-friends',
-          displayLabel: true,
-          view: React.createFactory(FriendsView)
+          view: FriendsView
         },
         favorites: {
           label: 'Favorites',
           icon: 'fa-favorite',
-          displayLabel: true,
-          view: React.createFactory(FavoritesView)
+          view: FavoritesView
         }
+      },
+      onTabChange: function(tabName, tab){
+        console.log('tab changed', tabName, tab);
       }
     });
   }
-});
+}));
 
-React.renderComponent(App(), document.body);
+React.render(App(), document.body);

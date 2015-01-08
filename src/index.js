@@ -1,95 +1,114 @@
 'use strict';
-var React = require('react');
+
+var React = require('react/addons');
+var cx = React.addons.classSet;
 var DOM = React.DOM;
+var PropTypes = React.PropTypes;
+var each = require('lodash.forEach');
 
 var tabbar = React.createClass({
   displayName: 'TabBar',
-
-  shouldComponentUpdate: function(){
-    return false;
+  propTypes: {
+    defaultTab: PropTypes.string,
+    // TODO: validate tabs in proptypes
+    tabs: PropTypes.object.isRequired,
+    onTabChange: PropTypes.func
+    // TODO: option to destroy not hide on active switch
+    // TODO: animation options
   },
 
-  handleTabClick: function(tab){
-    this.refs[this.current].getDOMNode().classList.remove('active');
-    this.refs[tab].getDOMNode().classList.add('active');
+  getInitialState: function(){
+    return {
+      activeTab: this.props.defaultTab
+    };
+  },
+  
+  handleTabClick: function(tabName){
+    // already active, ignore click
+    if (this.state.activeTab === tabName) {
+      return;
+    }
+    this.setState({
+      activeTab: tabName
+    });
 
-    this.refs[this.current+'View'].getDOMNode().classList.remove('active');
-    this.refs[tab+'View'].getDOMNode().classList.add('active');
-
-    this.current = tab;
-
-    if (this.props.onTabChange != null) {
-      this.props.onTabChange(tab, this.props.tabs[tab]);
+    if (typeof this.props.onTabChange === 'function') {
+      this.props.onTabChange(tabName, this.props.tabs[tabName]);
     }
   },
 
   render: function(){
-    var self = this;
-    var tabs = [];
     var views = [];
-    
-    this.current = this.props.default;
+    var tabs = [];
 
-    // iterate over TABS
-    Object.keys(this.props.tabs).forEach(function(tab){
-      var currentTab = self.props.tabs[tab];
-      var tabNode, viewNode;
+    each(this.props.tabs, function(tab, tabName){
+      var tabNode = [];
+      var viewNode;
+      var isActiveTab = (this.state.activeTab === tabName);
 
-      // element specified 
-      if (currentTab.el !== undefined) {
-        tabNode = currentTab.el;
+      // make sure the view is valid before we do anything else
+      if (typeof tab.view !== 'function') {
+        throw new Error('Invalid view attribute for tab ' + tabName);
       }
 
-      // icon specified 
-      else if (currentTab.icon !== undefined) {
-        tabNode = [];
+      // render the view given and wrap it, thats thew viewNode
+      viewNode = DOM.div({
+        key: tabName+'-view',
+        className: cx({
+          'tabbar-view': true,
+          active: isActiveTab
+        })
+      }, tab.view());
 
-        tabNode.push(DOM.span({className: currentTab.icon}));
+      // if they specified a custom el just use that
+      if (typeof tab.el !== 'undefined') {
+        tabNode = tab.el;
+      }
 
-        if (currentTab.displayLabel) {
-          tabNode.push(DOM.span({
-          className: 'tabbar-label'
-        }, currentTab.label));
+      if (tab.icon) {
+        // icon is a className
+        if (typeof tab.icon === 'string') {
+          tabNode.push(DOM.i({
+            key: tabName + '-tab-icon',
+            className: 'tabbar-icon ' + tab.icon
+          }));
+        // icon is a renderable
+        } else {
+          tabNode.push(tab.icon);
         }
       }
 
-      // just use label
-      else {
-        tabNode = DOM.span({
-          className: 'tabbar-label'
-        }, currentTab.label);
+      if (tab.label) {
+        // label is text
+        if (typeof tab.label === 'string') {
+          tabNode.push(DOM.span({
+            key: tabName + '-tab-label',
+            className: 'tabbar-label'
+          }, tab.label));
+        // label is a renderable
+        } else {
+          tabNode.push(tab.label);
+        }
       }
 
-      // set active tab
-      var claz = 'tabbar-tab';
-      if (tab === self.current) {
-        claz += ' active';
-      }
-
+      // wrap what we ended up with in a div
       tabNode = DOM.div({
-        className: claz, 
-        ref: tab,
-        onClick: self.handleTabClick.bind(null, tab)
+        key: tabName+'-tab',
+        className: cx({
+          'tabbar-tab': true,
+          active: isActiveTab
+        }),
+        'data-tabname': tabName,
+        onClick: this.handleTabClick.bind(this, tabName)
       }, tabNode);
-
-      var viewClaz = 'tabbar-view';
-      if (tab === self.current) {
-        viewClaz += ' active';
-      }
-
-      viewNode = DOM.div({
-        className: viewClaz,
-        key: tab+'ViewCont',
-        ref: tab+'View'
-      }, self.props.tabs[tab].view({
-        key: tab+'View'
-      }));
 
       tabs.push(tabNode);
       views.push(viewNode);
-    });
+    }, this);
 
-    return DOM.div(null,
+    return DOM.div({
+      className: 'tabbar'
+    },
       DOM.div({
         className: 'tabbar-main'
       }, views),

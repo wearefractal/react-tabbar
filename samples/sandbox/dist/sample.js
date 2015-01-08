@@ -2,23 +2,23 @@
 /* globals window, document*/
 'use strict';
 
-var TabBar = require('../../../src');
 var React = require('react');
 window.React = React; // for dev
 var DOM = React.DOM;
+var TabBar = React.createFactory(require('../../../src'));
 
 // FRIENDS
 
-var FriendsView = React.createClass({
+var FriendsView = React.createFactory(React.createClass({
   render: function(){
-    return  DOM.div({}, 'FRIENDS');
+    return DOM.div({}, 'FRIENDS');
   }
-});
+}));
 
 
 // FAVORITES
 
-var FavoritesView = React.createClass({
+var FavoritesView = React.createFactory(React.createClass({
   getInitialState: function(){
     return {foo: true}
   },
@@ -30,37 +30,36 @@ var FavoritesView = React.createClass({
 
     return DOM.div({}, 'FAVORITES', DOM.button({onClick: this.handleFavorite}, 'favorte'), DOM.div({}, this.state.foo.toString()));
   }
-});
+}));
 
 // APP
 
-var App = React.createClass({
+var App = React.createFactory(React.createClass({
   displayName: 'demo',
   render: function(){
 
     return TabBar({
-
-      'default': 'favorites',
-
+      defaultTab: 'favorites',
       tabs: {
         friends: {
           label: 'Friends',
           icon: 'fa-friends',
-          displayLabel: true,
-          view: React.createFactory(FriendsView)
+          view: FriendsView
         },
         favorites: {
           label: 'Favorites',
           icon: 'fa-favorite',
-          displayLabel: true,
-          view: React.createFactory(FavoritesView)
+          view: FavoritesView
         }
+      },
+      onTabChange: function(tabName, tab){
+        console.log('tab changed', tabName, tab);
       }
     });
   }
-});
+}));
 
-React.renderComponent(App(), document.body);
+React.render(App(), document.body);
 
 },{"../../../src":"/Users/contra/Projects/react-tabbar/src/index.js","react":"/Users/contra/Projects/react-tabbar/node_modules/react/react.js"}],"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
@@ -127,7 +126,1001 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreateCallback = require('lodash._basecreatecallback'),
+    forOwn = require('lodash.forown');
+
+/**
+ * Iterates over elements of a collection, executing the callback for each
+ * element. The callback is bound to `thisArg` and invoked with three arguments;
+ * (value, index|key, collection). Callbacks may exit iteration early by
+ * explicitly returning `false`.
+ *
+ * Note: As with other "Collections" methods, objects with a `length` property
+ * are iterated like arrays. To avoid this behavior `_.forIn` or `_.forOwn`
+ * may be used for object iteration.
+ *
+ * @static
+ * @memberOf _
+ * @alias each
+ * @category Collections
+ * @param {Array|Object|string} collection The collection to iterate over.
+ * @param {Function} [callback=identity] The function called per iteration.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Array|Object|string} Returns `collection`.
+ * @example
+ *
+ * _([1, 2, 3]).forEach(function(num) { console.log(num); }).join(',');
+ * // => logs each number and returns '1,2,3'
+ *
+ * _.forEach({ 'one': 1, 'two': 2, 'three': 3 }, function(num) { console.log(num); });
+ * // => logs each number and returns the object (property order is not guaranteed across environments)
+ */
+function forEach(collection, callback, thisArg) {
+  var index = -1,
+      length = collection ? collection.length : 0;
+
+  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+  if (typeof length == 'number') {
+    while (++index < length) {
+      if (callback(collection[index], index, collection) === false) {
+        break;
+      }
+    }
+  } else {
+    forOwn(collection, callback);
+  }
+  return collection;
+}
+
+module.exports = forEach;
+
+},{"lodash._basecreatecallback":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/index.js","lodash.forown":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var bind = require('lodash.bind'),
+    identity = require('lodash.identity'),
+    setBindData = require('lodash._setbinddata'),
+    support = require('lodash.support');
+
+/** Used to detected named functions */
+var reFuncName = /^\s*function[ \n\r\t]+\w/;
+
+/** Used to detect functions containing a `this` reference */
+var reThis = /\bthis\b/;
+
+/** Native method shortcuts */
+var fnToString = Function.prototype.toString;
+
+/**
+ * The base implementation of `_.createCallback` without support for creating
+ * "_.pluck" or "_.where" style callbacks.
+ *
+ * @private
+ * @param {*} [func=identity] The value to convert to a callback.
+ * @param {*} [thisArg] The `this` binding of the created callback.
+ * @param {number} [argCount] The number of arguments the callback accepts.
+ * @returns {Function} Returns a callback function.
+ */
+function baseCreateCallback(func, thisArg, argCount) {
+  if (typeof func != 'function') {
+    return identity;
+  }
+  // exit early for no `thisArg` or already bound by `Function#bind`
+  if (typeof thisArg == 'undefined' || !('prototype' in func)) {
+    return func;
+  }
+  var bindData = func.__bindData__;
+  if (typeof bindData == 'undefined') {
+    if (support.funcNames) {
+      bindData = !func.name;
+    }
+    bindData = bindData || !support.funcDecomp;
+    if (!bindData) {
+      var source = fnToString.call(func);
+      if (!support.funcNames) {
+        bindData = !reFuncName.test(source);
+      }
+      if (!bindData) {
+        // checks if `func` references the `this` keyword and stores the result
+        bindData = reThis.test(source);
+        setBindData(func, bindData);
+      }
+    }
+  }
+  // exit early if there are no `this` references or `func` is bound
+  if (bindData === false || (bindData !== true && bindData[1] & 1)) {
+    return func;
+  }
+  switch (argCount) {
+    case 1: return function(value) {
+      return func.call(thisArg, value);
+    };
+    case 2: return function(a, b) {
+      return func.call(thisArg, a, b);
+    };
+    case 3: return function(value, index, collection) {
+      return func.call(thisArg, value, index, collection);
+    };
+    case 4: return function(accumulator, value, index, collection) {
+      return func.call(thisArg, accumulator, value, index, collection);
+    };
+  }
+  return bind(func, thisArg);
+}
+
+module.exports = baseCreateCallback;
+
+},{"lodash._setbinddata":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/index.js","lodash.bind":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/index.js","lodash.identity":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.identity/index.js","lodash.support":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    noop = require('lodash.noop');
+
+/** Used as the property descriptor for `__bindData__` */
+var descriptor = {
+  'configurable': false,
+  'enumerable': false,
+  'value': null,
+  'writable': false
+};
+
+/** Used to set meta data on functions */
+var defineProperty = (function() {
+  // IE 8 only accepts DOM elements
+  try {
+    var o = {},
+        func = isNative(func = Object.defineProperty) && func,
+        result = func(o, o, o) && func;
+  } catch(e) { }
+  return result;
+}());
+
+/**
+ * Sets `this` binding data on a given function.
+ *
+ * @private
+ * @param {Function} func The function to set data on.
+ * @param {Array} value The data array to set.
+ */
+var setBindData = !defineProperty ? noop : function(func, value) {
+  descriptor.value = value;
+  defineProperty(func, '__bindData__', descriptor);
+};
+
+module.exports = setBindData;
+
+},{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js","lodash.noop":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Used to detect if a method is native */
+var reNative = RegExp('^' +
+  String(toString)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/toString| for [^\]]+/g, '.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+ */
+function isNative(value) {
+  return typeof value == 'function' && reNative.test(value);
+}
+
+module.exports = isNative;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * A no-operation function.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @example
+ *
+ * var object = { 'name': 'fred' };
+ * _.noop(object) === undefined;
+ * // => true
+ */
+function noop() {
+  // no operation performed
+}
+
+module.exports = noop;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var createWrapper = require('lodash._createwrapper'),
+    slice = require('lodash._slice');
+
+/**
+ * Creates a function that, when called, invokes `func` with the `this`
+ * binding of `thisArg` and prepends any additional `bind` arguments to those
+ * provided to the bound function.
+ *
+ * @static
+ * @memberOf _
+ * @category Functions
+ * @param {Function} func The function to bind.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {...*} [arg] Arguments to be partially applied.
+ * @returns {Function} Returns the new bound function.
+ * @example
+ *
+ * var func = function(greeting) {
+ *   return greeting + ' ' + this.name;
+ * };
+ *
+ * func = _.bind(func, { 'name': 'fred' }, 'hi');
+ * func();
+ * // => 'hi fred'
+ */
+function bind(func, thisArg) {
+  return arguments.length > 2
+    ? createWrapper(func, 17, slice(arguments, 2), null, thisArg)
+    : createWrapper(func, 1, null, null, thisArg);
+}
+
+module.exports = bind;
+
+},{"lodash._createwrapper":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/index.js","lodash._slice":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._slice/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseBind = require('lodash._basebind'),
+    baseCreateWrapper = require('lodash._basecreatewrapper'),
+    isFunction = require('lodash.isfunction'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push,
+    unshift = arrayRef.unshift;
+
+/**
+ * Creates a function that, when called, either curries or invokes `func`
+ * with an optional `this` binding and partially applied arguments.
+ *
+ * @private
+ * @param {Function|string} func The function or method name to reference.
+ * @param {number} bitmask The bitmask of method flags to compose.
+ *  The bitmask may be composed of the following flags:
+ *  1 - `_.bind`
+ *  2 - `_.bindKey`
+ *  4 - `_.curry`
+ *  8 - `_.curry` (bound)
+ *  16 - `_.partial`
+ *  32 - `_.partialRight`
+ * @param {Array} [partialArgs] An array of arguments to prepend to those
+ *  provided to the new function.
+ * @param {Array} [partialRightArgs] An array of arguments to append to those
+ *  provided to the new function.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {number} [arity] The arity of `func`.
+ * @returns {Function} Returns the new function.
+ */
+function createWrapper(func, bitmask, partialArgs, partialRightArgs, thisArg, arity) {
+  var isBind = bitmask & 1,
+      isBindKey = bitmask & 2,
+      isCurry = bitmask & 4,
+      isCurryBound = bitmask & 8,
+      isPartial = bitmask & 16,
+      isPartialRight = bitmask & 32;
+
+  if (!isBindKey && !isFunction(func)) {
+    throw new TypeError;
+  }
+  if (isPartial && !partialArgs.length) {
+    bitmask &= ~16;
+    isPartial = partialArgs = false;
+  }
+  if (isPartialRight && !partialRightArgs.length) {
+    bitmask &= ~32;
+    isPartialRight = partialRightArgs = false;
+  }
+  var bindData = func && func.__bindData__;
+  if (bindData && bindData !== true) {
+    // clone `bindData`
+    bindData = slice(bindData);
+    if (bindData[2]) {
+      bindData[2] = slice(bindData[2]);
+    }
+    if (bindData[3]) {
+      bindData[3] = slice(bindData[3]);
+    }
+    // set `thisBinding` is not previously bound
+    if (isBind && !(bindData[1] & 1)) {
+      bindData[4] = thisArg;
+    }
+    // set if previously bound but not currently (subsequent curried functions)
+    if (!isBind && bindData[1] & 1) {
+      bitmask |= 8;
+    }
+    // set curried arity if not yet set
+    if (isCurry && !(bindData[1] & 4)) {
+      bindData[5] = arity;
+    }
+    // append partial left arguments
+    if (isPartial) {
+      push.apply(bindData[2] || (bindData[2] = []), partialArgs);
+    }
+    // append partial right arguments
+    if (isPartialRight) {
+      unshift.apply(bindData[3] || (bindData[3] = []), partialRightArgs);
+    }
+    // merge flags
+    bindData[1] |= bitmask;
+    return createWrapper.apply(null, bindData);
+  }
+  // fast path for `_.bind`
+  var creater = (bitmask == 1 || bitmask === 17) ? baseBind : baseCreateWrapper;
+  return creater([func, bitmask, partialArgs, partialRightArgs, thisArg, arity]);
+}
+
+module.exports = createWrapper;
+
+},{"lodash._basebind":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/index.js","lodash._basecreatewrapper":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/index.js","lodash._slice":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._slice/index.js","lodash.isfunction":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash.isfunction/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreate = require('lodash._basecreate'),
+    isObject = require('lodash.isobject'),
+    setBindData = require('lodash._setbinddata'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push;
+
+/**
+ * The base implementation of `_.bind` that creates the bound function and
+ * sets its meta data.
+ *
+ * @private
+ * @param {Array} bindData The bind data array.
+ * @returns {Function} Returns the new bound function.
+ */
+function baseBind(bindData) {
+  var func = bindData[0],
+      partialArgs = bindData[2],
+      thisArg = bindData[4];
+
+  function bound() {
+    // `Function#bind` spec
+    // http://es5.github.io/#x15.3.4.5
+    if (partialArgs) {
+      // avoid `arguments` object deoptimizations by using `slice` instead
+      // of `Array.prototype.slice.call` and not assigning `arguments` to a
+      // variable as a ternary expression
+      var args = slice(partialArgs);
+      push.apply(args, arguments);
+    }
+    // mimic the constructor's `return` behavior
+    // http://es5.github.io/#x13.2.2
+    if (this instanceof bound) {
+      // ensure `new bound` is an instance of `func`
+      var thisBinding = baseCreate(func.prototype),
+          result = func.apply(thisBinding, args || arguments);
+      return isObject(result) ? result : thisBinding;
+    }
+    return func.apply(thisArg, args || arguments);
+  }
+  setBindData(bound, bindData);
+  return bound;
+}
+
+module.exports = baseBind;
+
+},{"lodash._basecreate":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/index.js","lodash._setbinddata":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/index.js","lodash._slice":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._slice/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/index.js":[function(require,module,exports){
+(function (global){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    noop = require('lodash.noop');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ * The base implementation of `_.create` without support for assigning
+ * properties to the created object.
+ *
+ * @private
+ * @param {Object} prototype The object to inherit from.
+ * @returns {Object} Returns the new object.
+ */
+function baseCreate(prototype, properties) {
+  return isObject(prototype) ? nativeCreate(prototype) : {};
+}
+// fallback for browsers without `Object.create`
+if (!nativeCreate) {
+  baseCreate = (function() {
+    function Object() {}
+    return function(prototype) {
+      if (isObject(prototype)) {
+        Object.prototype = prototype;
+        var result = new Object;
+        Object.prototype = null;
+      }
+      return result || global.Object();
+    };
+  }());
+}
+
+module.exports = baseCreate;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js","lodash.noop":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/**
+ * Checks if `value` is the language type of Object.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // check if the value is the ECMAScript language type of Object
+  // http://es5.github.io/#x8
+  // and avoid a V8 bug
+  // http://code.google.com/p/v8/issues/detail?id=2291
+  return !!(value && objectTypes[typeof value]);
+}
+
+module.exports = isObject;
+
+},{"lodash._objecttypes":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to determine if values are of the language type Object */
+var objectTypes = {
+  'boolean': false,
+  'function': true,
+  'object': true,
+  'number': false,
+  'string': false,
+  'undefined': false
+};
+
+module.exports = objectTypes;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreate = require('lodash._basecreate'),
+    isObject = require('lodash.isobject'),
+    setBindData = require('lodash._setbinddata'),
+    slice = require('lodash._slice');
+
+/**
+ * Used for `Array` method references.
+ *
+ * Normally `Array.prototype` would suffice, however, using an array literal
+ * avoids issues in Narwhal.
+ */
+var arrayRef = [];
+
+/** Native method shortcuts */
+var push = arrayRef.push;
+
+/**
+ * The base implementation of `createWrapper` that creates the wrapper and
+ * sets its meta data.
+ *
+ * @private
+ * @param {Array} bindData The bind data array.
+ * @returns {Function} Returns the new function.
+ */
+function baseCreateWrapper(bindData) {
+  var func = bindData[0],
+      bitmask = bindData[1],
+      partialArgs = bindData[2],
+      partialRightArgs = bindData[3],
+      thisArg = bindData[4],
+      arity = bindData[5];
+
+  var isBind = bitmask & 1,
+      isBindKey = bitmask & 2,
+      isCurry = bitmask & 4,
+      isCurryBound = bitmask & 8,
+      key = func;
+
+  function bound() {
+    var thisBinding = isBind ? thisArg : this;
+    if (partialArgs) {
+      var args = slice(partialArgs);
+      push.apply(args, arguments);
+    }
+    if (partialRightArgs || isCurry) {
+      args || (args = slice(arguments));
+      if (partialRightArgs) {
+        push.apply(args, partialRightArgs);
+      }
+      if (isCurry && args.length < arity) {
+        bitmask |= 16 & ~32;
+        return baseCreateWrapper([func, (isCurryBound ? bitmask : bitmask & ~3), args, null, thisArg, arity]);
+      }
+    }
+    args || (args = arguments);
+    if (isBindKey) {
+      func = thisBinding[key];
+    }
+    if (this instanceof bound) {
+      thisBinding = baseCreate(func.prototype);
+      var result = func.apply(thisBinding, args);
+      return isObject(result) ? result : thisBinding;
+    }
+    return func.apply(thisBinding, args);
+  }
+  setBindData(bound, bindData);
+  return bound;
+}
+
+module.exports = baseCreateWrapper;
+
+},{"lodash._basecreate":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/index.js","lodash._setbinddata":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/index.js","lodash._slice":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._slice/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/index.js":[function(require,module,exports){
+(function (global){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    noop = require('lodash.noop');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ * The base implementation of `_.create` without support for assigning
+ * properties to the created object.
+ *
+ * @private
+ * @param {Object} prototype The object to inherit from.
+ * @returns {Object} Returns the new object.
+ */
+function baseCreate(prototype, properties) {
+  return isObject(prototype) ? nativeCreate(prototype) : {};
+}
+// fallback for browsers without `Object.create`
+if (!nativeCreate) {
+  baseCreate = (function() {
+    function Object() {}
+    return function(prototype) {
+      if (isObject(prototype)) {
+        Object.prototype = prototype;
+        var result = new Object;
+        Object.prototype = null;
+      }
+      return result || global.Object();
+    };
+  }());
+}
+
+module.exports = baseCreate;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js","lodash.noop":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash.isfunction/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * Checks if `value` is a function.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ */
+function isFunction(value) {
+  return typeof value == 'function';
+}
+
+module.exports = isFunction;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._slice/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * Slices the `collection` from the `start` index up to, but not including,
+ * the `end` index.
+ *
+ * Note: This function is used instead of `Array#slice` to support node lists
+ * in IE < 9 and to ensure dense arrays are returned.
+ *
+ * @private
+ * @param {Array|Object|string} collection The collection to slice.
+ * @param {number} start The start index.
+ * @param {number} end The end index.
+ * @returns {Array} Returns the new array.
+ */
+function slice(array, start, end) {
+  start || (start = 0);
+  if (typeof end == 'undefined') {
+    end = array ? array.length : 0;
+  }
+  var index = -1,
+      length = end - start || 0,
+      result = Array(length < 0 ? 0 : length);
+
+  while (++index < length) {
+    result[index] = array[start + index];
+  }
+  return result;
+}
+
+module.exports = slice;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.identity/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/**
+ * This method returns the first argument provided to it.
+ *
+ * @static
+ * @memberOf _
+ * @category Utilities
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'name': 'fred' };
+ * _.identity(object) === object;
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
+
+module.exports = identity;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/index.js":[function(require,module,exports){
+(function (global){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative');
+
+/** Used to detect functions containing a `this` reference */
+var reThis = /\bthis\b/;
+
+/**
+ * An object used to flag environments features.
+ *
+ * @static
+ * @memberOf _
+ * @type Object
+ */
+var support = {};
+
+/**
+ * Detect if functions can be decompiled by `Function#toString`
+ * (all but PS3 and older Opera mobile browsers & avoided in Windows 8 apps).
+ *
+ * @memberOf _.support
+ * @type boolean
+ */
+support.funcDecomp = !isNative(global.WinRTError) && reThis.test(function() { return this; });
+
+/**
+ * Detect if `Function#name` is supported (all but IE).
+ *
+ * @memberOf _.support
+ * @type boolean
+ */
+support.funcNames = typeof Function.name == 'string';
+
+module.exports = support;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var baseCreateCallback = require('lodash._basecreatecallback'),
+    keys = require('lodash.keys'),
+    objectTypes = require('lodash._objecttypes');
+
+/**
+ * Iterates over own enumerable properties of an object, executing the callback
+ * for each property. The callback is bound to `thisArg` and invoked with three
+ * arguments; (value, key, object). Callbacks may exit iteration early by
+ * explicitly returning `false`.
+ *
+ * @static
+ * @memberOf _
+ * @type Function
+ * @category Objects
+ * @param {Object} object The object to iterate over.
+ * @param {Function} [callback=identity] The function called per iteration.
+ * @param {*} [thisArg] The `this` binding of `callback`.
+ * @returns {Object} Returns `object`.
+ * @example
+ *
+ * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
+ *   console.log(key);
+ * });
+ * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
+ */
+var forOwn = function(collection, callback, thisArg) {
+  var index, iterable = collection, result = iterable;
+  if (!iterable) return result;
+  if (!objectTypes[typeof iterable]) return result;
+  callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+    var ownIndex = -1,
+        ownProps = objectTypes[typeof iterable] && keys(iterable),
+        length = ownProps ? ownProps.length : 0;
+
+    while (++ownIndex < length) {
+      index = ownProps[ownIndex];
+      if (callback(iterable[index], index, collection) === false) return result;
+    }
+  return result
+};
+
+module.exports = forOwn;
+
+},{"lodash._basecreatecallback":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/index.js","lodash._objecttypes":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash._objecttypes/index.js","lodash.keys":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash._objecttypes/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array composed of the own enumerable property names of an object.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ * @example
+ *
+ * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (!isObject(object)) {
+    return [];
+  }
+  return nativeKeys(object);
+};
+
+module.exports = keys;
+
+},{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._isnative/index.js","lodash._shimkeys":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._shimkeys/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._isnative/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._shimkeys/index.js":[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which produces an array of the
+ * given object's own enumerable property names.
+ *
+ * @private
+ * @type Function
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ */
+var shimKeys = function(object) {
+  var index, iterable = object, result = [];
+  if (!iterable) return result;
+  if (!(objectTypes[typeof object])) return result;
+    for (index in iterable) {
+      if (hasOwnProperty.call(iterable, index)) {
+        result.push(index);
+      }
+    }
+  return result
+};
+
+module.exports = shimKeys;
+
+},{"lodash._objecttypes":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash._objecttypes/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash.isobject/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/addons.js":[function(require,module,exports){
+module.exports = require('./lib/ReactWithAddons');
+
+},{"./lib/ReactWithAddons":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactWithAddons.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -376,7 +1369,120 @@ var BeforeInputEventPlugin = {
 
 module.exports = BeforeInputEventPlugin;
 
-},{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./SyntheticInputEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticInputEvent.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSProperty.js":[function(require,module,exports){
+},{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPropagators":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPropagators.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./SyntheticInputEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticInputEvent.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSCore.js":[function(require,module,exports){
+(function (process){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule CSSCore
+ * @typechecks
+ */
+
+var invariant = require("./invariant");
+
+/**
+ * The CSSCore module specifies the API (and implements most of the methods)
+ * that should be used when dealing with the display of elements (via their
+ * CSS classes and visibility on screen. It is an API focused on mutating the
+ * display and not reading it as no logical state should be encoded in the
+ * display of elements.
+ */
+
+var CSSCore = {
+
+  /**
+   * Adds the class passed in to the element if it doesn't already have it.
+   *
+   * @param {DOMElement} element the element to set the class on
+   * @param {string} className the CSS className
+   * @return {DOMElement} the element passed in
+   */
+  addClass: function(element, className) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      !/\s/.test(className),
+      'CSSCore.addClass takes only a single class name. "%s" contains ' +
+      'multiple classes.', className
+    ) : invariant(!/\s/.test(className)));
+
+    if (className) {
+      if (element.classList) {
+        element.classList.add(className);
+      } else if (!CSSCore.hasClass(element, className)) {
+        element.className = element.className + ' ' + className;
+      }
+    }
+    return element;
+  },
+
+  /**
+   * Removes the class passed in from the element
+   *
+   * @param {DOMElement} element the element to set the class on
+   * @param {string} className the CSS className
+   * @return {DOMElement} the element passed in
+   */
+  removeClass: function(element, className) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      !/\s/.test(className),
+      'CSSCore.removeClass takes only a single class name. "%s" contains ' +
+      'multiple classes.', className
+    ) : invariant(!/\s/.test(className)));
+
+    if (className) {
+      if (element.classList) {
+        element.classList.remove(className);
+      } else if (CSSCore.hasClass(element, className)) {
+        element.className = element.className
+          .replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)', 'g'), '$1')
+          .replace(/\s+/g, ' ') // multiple spaces to one
+          .replace(/^\s*|\s*$/g, ''); // trim the ends
+      }
+    }
+    return element;
+  },
+
+  /**
+   * Helper to add or remove a class from an element based on a condition.
+   *
+   * @param {DOMElement} element the element to set the class on
+   * @param {string} className the CSS className
+   * @param {*} bool condition to whether to add or remove the class
+   * @return {DOMElement} the element passed in
+   */
+  conditionClass: function(element, className, bool) {
+    return (bool ? CSSCore.addClass : CSSCore.removeClass)(element, className);
+  },
+
+  /**
+   * Tests whether the element has the class specified.
+   *
+   * @param {DOMNode|DOMWindow} element the element to set the class on
+   * @param {string} className the CSS className
+   * @return {boolean} true if the element has the class, false if not
+   */
+  hasClass: function(element, className) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      !/\s/.test(className),
+      'CSS.hasClass takes only a single class name.'
+    ) : invariant(!/\s/.test(className)));
+    if (element.classList) {
+      return !!className && element.classList.contains(className);
+    }
+    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
+  }
+
+};
+
+module.exports = CSSCore;
+
+}).call(this,require('_process'))
+
+},{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSProperty.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -395,7 +1501,6 @@ module.exports = BeforeInputEventPlugin;
  */
 var isUnitlessNumber = {
   columnCount: true,
-  fillOpacity: true,
   flex: true,
   flexGrow: true,
   flexShrink: true,
@@ -407,7 +1512,11 @@ var isUnitlessNumber = {
   orphans: true,
   widows: true,
   zIndex: true,
-  zoom: true
+  zoom: true,
+
+  // SVG-related properties
+  fillOpacity: true,
+  strokeOpacity: true
 };
 
 /**
@@ -627,6 +1736,7 @@ var CSSPropertyOperations = {
 module.exports = CSSPropertyOperations;
 
 }).call(this,require('_process'))
+
 },{"./CSSProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSProperty.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./camelizeStyleName":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/camelizeStyleName.js","./dangerousStyleValue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/dangerousStyleValue.js","./hyphenateStyleName":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/hyphenateStyleName.js","./memoizeStringOnly":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/memoizeStringOnly.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js":[function(require,module,exports){
 (function (process){
 /**
@@ -727,6 +1837,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 module.exports = CallbackQueue;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ChangeEventPlugin.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -1568,6 +2679,7 @@ var DOMChildrenOperations = {
 module.exports = DOMChildrenOperations;
 
 }).call(this,require('_process'))
+
 },{"./Danger":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Danger.js","./ReactMultiChildUpdateTypes":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMultiChildUpdateTypes.js","./getTextContentAccessor":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getTextContentAccessor.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js":[function(require,module,exports){
 (function (process){
 /**
@@ -1867,6 +2979,7 @@ var DOMProperty = {
 module.exports = DOMProperty;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js":[function(require,module,exports){
 (function (process){
 /**
@@ -2064,6 +3177,7 @@ var DOMPropertyOperations = {
 module.exports = DOMPropertyOperations;
 
 }).call(this,require('_process'))
+
 },{"./DOMProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js","./escapeTextForBrowser":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/escapeTextForBrowser.js","./memoizeStringOnly":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/memoizeStringOnly.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Danger.js":[function(require,module,exports){
 (function (process){
 /**
@@ -2250,6 +3364,7 @@ var Danger = {
 module.exports = Danger;
 
 }).call(this,require('_process'))
+
 },{"./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./createNodesFromMarkup":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/createNodesFromMarkup.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","./getMarkupWrap":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DefaultEventPluginOrder.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -2592,6 +3707,7 @@ var EventListener = {
 module.exports = EventListener;
 
 }).call(this,require('_process'))
+
 },{"./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginHub.js":[function(require,module,exports){
 (function (process){
 /**
@@ -2868,6 +3984,7 @@ var EventPluginHub = {
 module.exports = EventPluginHub;
 
 }).call(this,require('_process'))
+
 },{"./EventPluginRegistry":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginRegistry.js","./EventPluginUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginUtils.js","./accumulateInto":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginRegistry.js":[function(require,module,exports){
 (function (process){
 /**
@@ -3148,6 +4265,7 @@ var EventPluginRegistry = {
 module.exports = EventPluginRegistry;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginUtils.js":[function(require,module,exports){
 (function (process){
 /**
@@ -3369,6 +4487,7 @@ var EventPluginUtils = {
 module.exports = EventPluginUtils;
 
 }).call(this,require('_process'))
+
 },{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPropagators.js":[function(require,module,exports){
 (function (process){
 /**
@@ -3511,6 +4630,7 @@ var EventPropagators = {
 module.exports = EventPropagators;
 
 }).call(this,require('_process'))
+
 },{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginHub.js","./accumulateInto":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/forEachAccumulated.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3647,7 +4767,11 @@ var HTMLDOMPropertyConfig = {
     draggable: null,
     encType: null,
     form: MUST_USE_ATTRIBUTE,
+    formAction: MUST_USE_ATTRIBUTE,
+    formEncType: MUST_USE_ATTRIBUTE,
+    formMethod: MUST_USE_ATTRIBUTE,
     formNoValidate: HAS_BOOLEAN_VALUE,
+    formTarget: MUST_USE_ATTRIBUTE,
     frameBorder: MUST_USE_ATTRIBUTE,
     height: MUST_USE_ATTRIBUTE,
     hidden: MUST_USE_ATTRIBUTE | HAS_BOOLEAN_VALUE,
@@ -3662,6 +4786,8 @@ var HTMLDOMPropertyConfig = {
     list: MUST_USE_ATTRIBUTE,
     loop: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
     manifest: MUST_USE_ATTRIBUTE,
+    marginHeight: null,
+    marginWidth: null,
     max: null,
     maxLength: MUST_USE_ATTRIBUTE,
     media: MUST_USE_ATTRIBUTE,
@@ -3742,7 +4868,48 @@ var HTMLDOMPropertyConfig = {
 
 module.exports = HTMLDOMPropertyConfig;
 
-},{"./DOMProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedValueUtils.js":[function(require,module,exports){
+},{"./DOMProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedStateMixin.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule LinkedStateMixin
+ * @typechecks static-only
+ */
+
+"use strict";
+
+var ReactLink = require("./ReactLink");
+var ReactStateSetters = require("./ReactStateSetters");
+
+/**
+ * A simple mixin around ReactLink.forState().
+ */
+var LinkedStateMixin = {
+  /**
+   * Create a ReactLink that's linked to part of this component's state. The
+   * ReactLink will have the current value of this.state[key] and will call
+   * setState() when a change is requested.
+   *
+   * @param {string} key state key to update. Note: you may want to use keyOf()
+   * if you're using Google Closure Compiler advanced mode.
+   * @return {ReactLink} ReactLink instance linking to the state.
+   */
+  linkState: function(key) {
+    return new ReactLink(
+      this.state[key],
+      ReactStateSetters.createStateKeySetter(this, key)
+    );
+  }
+};
+
+module.exports = LinkedStateMixin;
+
+},{"./ReactLink":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLink.js","./ReactStateSetters":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactStateSetters.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedValueUtils.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -3898,6 +5065,7 @@ var LinkedValueUtils = {
 module.exports = LinkedValueUtils;
 
 }).call(this,require('_process'))
+
 },{"./ReactPropTypes":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypes.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LocalEventTrapMixin.js":[function(require,module,exports){
 (function (process){
 /**
@@ -3948,6 +5116,7 @@ var LocalEventTrapMixin = {
 module.exports = LocalEventTrapMixin;
 
 }).call(this,require('_process'))
+
 },{"./ReactBrowserEventEmitter":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserEventEmitter.js","./accumulateInto":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/accumulateInto.js","./forEachAccumulated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/forEachAccumulated.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/MobileSafariClickEventPlugin.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4169,6 +5338,7 @@ var PooledClass = {
 module.exports = PooledClass;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js":[function(require,module,exports){
 (function (process){
 /**
@@ -4352,11 +5522,12 @@ if ("production" !== process.env.NODE_ENV) {
 
 // Version exists only in the open-source version of React, not in Facebook's
 // internal version.
-React.version = '0.12.1';
+React.version = '0.12.2';
 
 module.exports = React;
 
 }).call(this,require('_process'))
+
 },{"./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./EventPluginUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginUtils.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactChildren":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactChildren.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","./ReactContext":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","./ReactDOMComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMComponent.js","./ReactDefaultInjection":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultInjection.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactPropTypes":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypes.js","./ReactServerRendering":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactServerRendering.js","./ReactTextComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTextComponent.js","./deprecated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/deprecated.js","./onlyChild":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/onlyChild.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js":[function(require,module,exports){
 (function (process){
 /**
@@ -4400,6 +5571,7 @@ var ReactBrowserComponentMixin = {
 module.exports = ReactBrowserComponentMixin;
 
 }).call(this,require('_process'))
+
 },{"./ReactEmptyComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserEventEmitter.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4755,7 +5927,210 @@ var ReactBrowserEventEmitter = assign({}, ReactEventEmitterMixin, {
 
 module.exports = ReactBrowserEventEmitter;
 
-},{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginHub.js","./EventPluginRegistry":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginRegistry.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactEventEmitterMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEventEmitterMixin.js","./ViewportMetrics":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ViewportMetrics.js","./isEventSupported":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/isEventSupported.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactChildren.js":[function(require,module,exports){
+},{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginHub.js","./EventPluginRegistry":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginRegistry.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactEventEmitterMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEventEmitterMixin.js","./ViewportMetrics":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ViewportMetrics.js","./isEventSupported":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/isEventSupported.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCSSTransitionGroup.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks
+ * @providesModule ReactCSSTransitionGroup
+ */
+
+"use strict";
+
+var React = require("./React");
+
+var assign = require("./Object.assign");
+
+var ReactTransitionGroup = React.createFactory(
+  require("./ReactTransitionGroup")
+);
+var ReactCSSTransitionGroupChild = React.createFactory(
+  require("./ReactCSSTransitionGroupChild")
+);
+
+var ReactCSSTransitionGroup = React.createClass({
+  displayName: 'ReactCSSTransitionGroup',
+
+  propTypes: {
+    transitionName: React.PropTypes.string.isRequired,
+    transitionEnter: React.PropTypes.bool,
+    transitionLeave: React.PropTypes.bool
+  },
+
+  getDefaultProps: function() {
+    return {
+      transitionEnter: true,
+      transitionLeave: true
+    };
+  },
+
+  _wrapChild: function(child) {
+    // We need to provide this childFactory so that
+    // ReactCSSTransitionGroupChild can receive updates to name, enter, and
+    // leave while it is leaving.
+    return ReactCSSTransitionGroupChild(
+      {
+        name: this.props.transitionName,
+        enter: this.props.transitionEnter,
+        leave: this.props.transitionLeave
+      },
+      child
+    );
+  },
+
+  render: function() {
+    return (
+      ReactTransitionGroup(
+        assign({}, this.props, {childFactory: this._wrapChild})
+      )
+    );
+  }
+});
+
+module.exports = ReactCSSTransitionGroup;
+
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js","./ReactCSSTransitionGroupChild":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCSSTransitionGroupChild.js","./ReactTransitionGroup":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionGroup.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCSSTransitionGroupChild.js":[function(require,module,exports){
+(function (process){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks
+ * @providesModule ReactCSSTransitionGroupChild
+ */
+
+"use strict";
+
+var React = require("./React");
+
+var CSSCore = require("./CSSCore");
+var ReactTransitionEvents = require("./ReactTransitionEvents");
+
+var onlyChild = require("./onlyChild");
+
+// We don't remove the element from the DOM until we receive an animationend or
+// transitionend event. If the user screws up and forgets to add an animation
+// their node will be stuck in the DOM forever, so we detect if an animation
+// does not start and if it doesn't, we just call the end listener immediately.
+var TICK = 17;
+var NO_EVENT_TIMEOUT = 5000;
+
+var noEventListener = null;
+
+
+if ("production" !== process.env.NODE_ENV) {
+  noEventListener = function() {
+    console.warn(
+      'transition(): tried to perform an animation without ' +
+      'an animationend or transitionend event after timeout (' +
+      NO_EVENT_TIMEOUT + 'ms). You should either disable this ' +
+      'transition in JS or add a CSS animation/transition.'
+    );
+  };
+}
+
+var ReactCSSTransitionGroupChild = React.createClass({
+  displayName: 'ReactCSSTransitionGroupChild',
+
+  transition: function(animationType, finishCallback) {
+    var node = this.getDOMNode();
+    var className = this.props.name + '-' + animationType;
+    var activeClassName = className + '-active';
+    var noEventTimeout = null;
+
+    var endListener = function(e) {
+      if (e && e.target !== node) {
+        return;
+      }
+      if ("production" !== process.env.NODE_ENV) {
+        clearTimeout(noEventTimeout);
+      }
+
+      CSSCore.removeClass(node, className);
+      CSSCore.removeClass(node, activeClassName);
+
+      ReactTransitionEvents.removeEndEventListener(node, endListener);
+
+      // Usually this optional callback is used for informing an owner of
+      // a leave animation and telling it to remove the child.
+      finishCallback && finishCallback();
+    };
+
+    ReactTransitionEvents.addEndEventListener(node, endListener);
+
+    CSSCore.addClass(node, className);
+
+    // Need to do this to actually trigger a transition.
+    this.queueClass(activeClassName);
+
+    if ("production" !== process.env.NODE_ENV) {
+      noEventTimeout = setTimeout(noEventListener, NO_EVENT_TIMEOUT);
+    }
+  },
+
+  queueClass: function(className) {
+    this.classNameQueue.push(className);
+
+    if (!this.timeout) {
+      this.timeout = setTimeout(this.flushClassNameQueue, TICK);
+    }
+  },
+
+  flushClassNameQueue: function() {
+    if (this.isMounted()) {
+      this.classNameQueue.forEach(
+        CSSCore.addClass.bind(CSSCore, this.getDOMNode())
+      );
+    }
+    this.classNameQueue.length = 0;
+    this.timeout = null;
+  },
+
+  componentWillMount: function() {
+    this.classNameQueue = [];
+  },
+
+  componentWillUnmount: function() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  },
+
+  componentWillEnter: function(done) {
+    if (this.props.enter) {
+      this.transition('enter', done);
+    } else {
+      done();
+    }
+  },
+
+  componentWillLeave: function(done) {
+    if (this.props.leave) {
+      this.transition('leave', done);
+    } else {
+      done();
+    }
+  },
+
+  render: function() {
+    return onlyChild(this.props.children);
+  }
+});
+
+module.exports = ReactCSSTransitionGroupChild;
+
+}).call(this,require('_process'))
+
+},{"./CSSCore":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSCore.js","./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js","./ReactTransitionEvents":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionEvents.js","./onlyChild":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/onlyChild.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactChildren.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -4905,6 +6280,7 @@ var ReactChildren = {
 module.exports = ReactChildren;
 
 }).call(this,require('_process'))
+
 },{"./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./traverseAllChildren":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js":[function(require,module,exports){
 (function (process){
 /**
@@ -5348,6 +6724,7 @@ var ReactComponent = {
 module.exports = ReactComponent;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponentBrowserEnvironment.js":[function(require,module,exports){
 (function (process){
 /**
@@ -5470,7 +6847,57 @@ var ReactComponentBrowserEnvironment = {
 module.exports = ReactComponentBrowserEnvironment;
 
 }).call(this,require('_process'))
-},{"./ReactDOMIDOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMIDOperations.js","./ReactMarkupChecksum":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMarkupChecksum.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactReconcileTransaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactReconcileTransaction.js","./getReactRootElementInContainer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getReactRootElementInContainer.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/setInnerHTML.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
+
+},{"./ReactDOMIDOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMIDOperations.js","./ReactMarkupChecksum":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMarkupChecksum.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactReconcileTransaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactReconcileTransaction.js","./getReactRootElementInContainer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getReactRootElementInContainer.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/setInnerHTML.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponentWithPureRenderMixin.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+* @providesModule ReactComponentWithPureRenderMixin
+*/
+
+"use strict";
+
+var shallowEqual = require("./shallowEqual");
+
+/**
+ * If your React component's render function is "pure", e.g. it will render the
+ * same result given the same props and state, provide this Mixin for a
+ * considerable performance boost.
+ *
+ * Most React components have pure render functions.
+ *
+ * Example:
+ *
+ *   var ReactComponentWithPureRenderMixin =
+ *     require('ReactComponentWithPureRenderMixin');
+ *   React.createClass({
+ *     mixins: [ReactComponentWithPureRenderMixin],
+ *
+ *     render: function() {
+ *       return <div className={this.props.className}>foo</div>;
+ *     }
+ *   });
+ *
+ * Note: This only checks shallow equality for props and state. If these contain
+ * complex data structures this mixin may have false-negatives for deeper
+ * differences. Only mixin to components which have simple props and state, or
+ * use `forceUpdate()` when you know deep data structures have changed.
+ */
+var ReactComponentWithPureRenderMixin = {
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return !shallowEqual(this.props, nextProps) ||
+           !shallowEqual(this.state, nextState);
+  }
+};
+
+module.exports = ReactComponentWithPureRenderMixin;
+
+},{"./shallowEqual":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/shallowEqual.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -6910,6 +8337,7 @@ var ReactCompositeComponent = {
 module.exports = ReactCompositeComponent;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactContext":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactEmptyComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactErrorUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactErrorUtils.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./ReactPropTransferer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTransferer.js","./ReactPropTypeLocationNames":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js","./ReactPropTypeLocations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./instantiateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyMirror":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyMirror.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","./mapObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/mapObject.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./shouldUpdateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7189,6 +8617,7 @@ var ReactDOM = mapObject({
 module.exports = ReactDOM;
 
 }).call(this,require('_process'))
+
 },{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactElementValidator":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./mapObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/mapObject.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMButton.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7741,6 +9170,7 @@ assign(
 module.exports = ReactDOMComponent;
 
 }).call(this,require('_process'))
+
 },{"./CSSPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSPropertyOperations.js","./DOMProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js","./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactBrowserEventEmitter":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactMultiChild":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMultiChild.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./escapeTextForBrowser":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/escapeTextForBrowser.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./isEventSupported":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/isEventSupported.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMForm.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -7977,6 +9407,7 @@ var ReactDOMIDOperations = {
 module.exports = ReactDOMIDOperations;
 
 }).call(this,require('_process'))
+
 },{"./CSSPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CSSPropertyOperations.js","./DOMChildrenOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMChildrenOperations.js","./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./setInnerHTML":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/setInnerHTML.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMImg.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8203,6 +9634,7 @@ var ReactDOMInput = ReactCompositeComponent.createClass({
 module.exports = ReactDOMInput;
 
 }).call(this,require('_process'))
+
 },{"./AutoFocusMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMOption.js":[function(require,module,exports){
 (function (process){
 /**
@@ -8256,6 +9688,7 @@ var ReactDOMOption = ReactCompositeComponent.createClass({
 module.exports = ReactDOMOption;
 
 }).call(this,require('_process'))
+
 },{"./ReactBrowserComponentMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMSelect.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8790,6 +10223,7 @@ var ReactDOMTextarea = ReactCompositeComponent.createClass({
 module.exports = ReactDOMTextarea;
 
 }).call(this,require('_process'))
+
 },{"./AutoFocusMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/AutoFocusMixin.js","./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./LinkedValueUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedValueUtils.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactBrowserComponentMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","./ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultBatchingStrategy.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -8992,6 +10426,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
+
 },{"./BeforeInputEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/BeforeInputEventPlugin.js","./ChangeEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ChangeEventPlugin.js","./ClientReactRootIndex":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ClientReactRootIndex.js","./CompositionEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CompositionEventPlugin.js","./DefaultEventPluginOrder":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DefaultEventPluginOrder.js","./EnterLeaveEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EnterLeaveEventPlugin.js","./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./HTMLDOMPropertyConfig":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/HTMLDOMPropertyConfig.js","./MobileSafariClickEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/MobileSafariClickEventPlugin.js","./ReactBrowserComponentMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserComponentMixin.js","./ReactComponentBrowserEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponentBrowserEnvironment.js","./ReactDOMButton":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMButton.js","./ReactDOMComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMComponent.js","./ReactDOMForm":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMForm.js","./ReactDOMImg":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMImg.js","./ReactDOMInput":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMInput.js","./ReactDOMOption":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMOption.js","./ReactDOMSelect":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMSelect.js","./ReactDOMTextarea":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOMTextarea.js","./ReactDefaultBatchingStrategy":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultBatchingStrategy.js","./ReactDefaultPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultPerf.js","./ReactEventListener":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEventListener.js","./ReactInjection":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInjection.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./SVGDOMPropertyConfig":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SVGDOMPropertyConfig.js","./SelectEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SelectEventPlugin.js","./ServerReactRootIndex":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ServerReactRootIndex.js","./SimpleEventPlugin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SimpleEventPlugin.js","./createFullPageComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/createFullPageComponent.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultPerf.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -9636,7 +11071,7 @@ ReactElement.createElement = function(type, config, children) {
   }
 
   // Resolve default props
-  if (type.defaultProps) {
+  if (type && type.defaultProps) {
     var defaultProps = type.defaultProps;
     for (propName in defaultProps) {
       if (typeof props[propName] === 'undefined') {
@@ -9704,7 +11139,9 @@ ReactElement.isValidElement = function(object) {
 module.exports = ReactElement;
 
 }).call(this,require('_process'))
+
 },{"./ReactContext":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactContext.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElementValidator.js":[function(require,module,exports){
+(function (process){
 /**
  * Copyright 2014, Facebook, Inc.
  * All rights reserved.
@@ -9730,6 +11167,7 @@ var ReactPropTypeLocations = require("./ReactPropTypeLocations");
 var ReactCurrentOwner = require("./ReactCurrentOwner");
 
 var monitorCodeUse = require("./monitorCodeUse");
+var warning = require("./warning");
 
 /**
  * Warn if there's no key explicitly set on dynamic arrays of children or
@@ -9927,6 +11365,15 @@ function checkPropTypes(componentName, propTypes, props, location) {
 var ReactElementValidator = {
 
   createElement: function(type, props, children) {
+    // We warn in this case but don't throw. We expect the element creation to
+    // succeed and there will likely be errors in render.
+    ("production" !== process.env.NODE_ENV ? warning(
+      type != null,
+      'React.createElement: type should not be null or undefined. It should ' +
+        'be a string (for DOM elements) or a ReactClass (for composite ' +
+        'components).'
+    ) : null);
+
     var element = ReactElement.createElement.apply(this, arguments);
 
     // The result can be nullish if a mock or a custom function is used.
@@ -9939,22 +11386,24 @@ var ReactElementValidator = {
       validateChildKeys(arguments[i], type);
     }
 
-    var name = type.displayName;
-    if (type.propTypes) {
-      checkPropTypes(
-        name,
-        type.propTypes,
-        element.props,
-        ReactPropTypeLocations.prop
-      );
-    }
-    if (type.contextTypes) {
-      checkPropTypes(
-        name,
-        type.contextTypes,
-        element._context,
-        ReactPropTypeLocations.context
-      );
+    if (type) {
+      var name = type.displayName;
+      if (type.propTypes) {
+        checkPropTypes(
+          name,
+          type.propTypes,
+          element.props,
+          ReactPropTypeLocations.prop
+        );
+      }
+      if (type.contextTypes) {
+        checkPropTypes(
+          name,
+          type.contextTypes,
+          element._context,
+          ReactPropTypeLocations.context
+        );
+      }
     }
     return element;
   },
@@ -9972,7 +11421,9 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 
-},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
+}).call(this,require('_process'))
+
+},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTypeLocations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -10049,6 +11500,7 @@ var ReactEmptyComponent = {
 module.exports = ReactEmptyComponent;
 
 }).call(this,require('_process'))
+
 },{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactErrorUtils.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -10826,6 +12278,7 @@ var ReactInstanceHandles = {
 module.exports = ReactInstanceHandles;
 
 }).call(this,require('_process'))
+
 },{"./ReactRootIndex":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactRootIndex.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js":[function(require,module,exports){
 (function (process){
 /**
@@ -11073,7 +12526,81 @@ ReactLegacyElementFactory._isLegacyCallWarningEnabled = true;
 module.exports = ReactLegacyElementFactory;
 
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMarkupChecksum.js":[function(require,module,exports){
+
+},{"./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./monitorCodeUse":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/monitorCodeUse.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLink.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactLink
+ * @typechecks static-only
+ */
+
+"use strict";
+
+/**
+ * ReactLink encapsulates a common pattern in which a component wants to modify
+ * a prop received from its parent. ReactLink allows the parent to pass down a
+ * value coupled with a callback that, when invoked, expresses an intent to
+ * modify that value. For example:
+ *
+ * React.createClass({
+ *   getInitialState: function() {
+ *     return {value: ''};
+ *   },
+ *   render: function() {
+ *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
+ *     return <input valueLink={valueLink} />;
+ *   },
+ *   this._handleValueChange: function(newValue) {
+ *     this.setState({value: newValue});
+ *   }
+ * });
+ *
+ * We have provided some sugary mixins to make the creation and
+ * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
+ */
+
+var React = require("./React");
+
+/**
+ * @param {*} value current value of the link
+ * @param {function} requestChange callback to request a change
+ */
+function ReactLink(value, requestChange) {
+  this.value = value;
+  this.requestChange = requestChange;
+}
+
+/**
+ * Creates a PropType that enforces the ReactLink API and optionally checks the
+ * type of the value being passed inside the link. Example:
+ *
+ * MyComponent.propTypes = {
+ *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
+ * }
+ */
+function createLinkTypeChecker(linkType) {
+  var shapes = {
+    value: typeof linkType === 'undefined' ?
+      React.PropTypes.any.isRequired :
+      linkType.isRequired,
+    requestChange: React.PropTypes.func.isRequired
+  };
+  return React.PropTypes.shape(shapes);
+}
+
+ReactLink.PropTypes = {
+  link: createLinkTypeChecker
+};
+
+module.exports = ReactLink;
+
+},{"./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMarkupChecksum.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -11819,6 +13346,7 @@ ReactMount.renderComponent = deprecated(
 module.exports = ReactMount;
 
 }).call(this,require('_process'))
+
 },{"./DOMProperty":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMProperty.js","./ReactBrowserEventEmitter":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./containsNode":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/containsNode.js","./deprecated":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/deprecated.js","./getReactRootElementInContainer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getReactRootElementInContainer.js","./instantiateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./shouldUpdateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/shouldUpdateReactComponent.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMultiChild.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -12347,12 +13875,13 @@ function createInstanceForTag(tag, props, parentType) {
 
 var ReactNativeComponent = {
   createInstanceForTag: createInstanceForTag,
-  injection: ReactNativeComponentInjection,
+  injection: ReactNativeComponentInjection
 };
 
 module.exports = ReactNativeComponent;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactOwner.js":[function(require,module,exports){
 (function (process){
 /**
@@ -12509,6 +14038,7 @@ var ReactOwner = {
 module.exports = ReactOwner;
 
 }).call(this,require('_process'))
+
 },{"./emptyObject":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyObject.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js":[function(require,module,exports){
 (function (process){
 /**
@@ -12593,6 +14123,7 @@ function _noMeasure(objName, fnName, func) {
 module.exports = ReactPerf;
 
 }).call(this,require('_process'))
+
 },{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTransferer.js":[function(require,module,exports){
 (function (process){
 /**
@@ -12760,6 +14291,7 @@ var ReactPropTransferer = {
 module.exports = ReactPropTransferer;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./joinClasses":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/joinClasses.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocationNames.js":[function(require,module,exports){
 (function (process){
 /**
@@ -12788,6 +14320,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = ReactPropTypeLocationNames;
 
 }).call(this,require('_process'))
+
 },{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypeLocations.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -13509,6 +15042,7 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
+
 },{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./ReactMarkupChecksum":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMarkupChecksum.js","./ReactServerRenderingTransaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactServerRenderingTransaction.js","./instantiateReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/instantiateReactComponent.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactServerRenderingTransaction.js":[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -13622,7 +15156,525 @@ PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
 
-},{"./CallbackQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactPutListenerQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTextComponent.js":[function(require,module,exports){
+},{"./CallbackQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactPutListenerQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPutListenerQueue.js","./Transaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactStateSetters.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactStateSetters
+ */
+
+"use strict";
+
+var ReactStateSetters = {
+  /**
+   * Returns a function that calls the provided function, and uses the result
+   * of that to set the component's state.
+   *
+   * @param {ReactCompositeComponent} component
+   * @param {function} funcReturningState Returned callback uses this to
+   *                                      determine how to update state.
+   * @return {function} callback that when invoked uses funcReturningState to
+   *                    determined the object literal to setState.
+   */
+  createStateSetter: function(component, funcReturningState) {
+    return function(a, b, c, d, e, f) {
+      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
+      if (partialState) {
+        component.setState(partialState);
+      }
+    };
+  },
+
+  /**
+   * Returns a single-argument callback that can be used to update a single
+   * key in the component's state.
+   *
+   * Note: this is memoized function, which makes it inexpensive to call.
+   *
+   * @param {ReactCompositeComponent} component
+   * @param {string} key The key in the state that you should update.
+   * @return {function} callback of 1 argument which calls setState() with
+   *                    the provided keyName and callback argument.
+   */
+  createStateKeySetter: function(component, key) {
+    // Memoize the setters.
+    var cache = component.__keySetters || (component.__keySetters = {});
+    return cache[key] || (cache[key] = createStateKeySetter(component, key));
+  }
+};
+
+function createStateKeySetter(component, key) {
+  // Partial state is allocated outside of the function closure so it can be
+  // reused with every call, avoiding memory allocation when this function
+  // is called.
+  var partialState = {};
+  return function stateKeySetter(value) {
+    partialState[key] = value;
+    component.setState(partialState);
+  };
+}
+
+ReactStateSetters.Mixin = {
+  /**
+   * Returns a function that calls the provided function, and uses the result
+   * of that to set the component's state.
+   *
+   * For example, these statements are equivalent:
+   *
+   *   this.setState({x: 1});
+   *   this.createStateSetter(function(xValue) {
+   *     return {x: xValue};
+   *   })(1);
+   *
+   * @param {function} funcReturningState Returned callback uses this to
+   *                                      determine how to update state.
+   * @return {function} callback that when invoked uses funcReturningState to
+   *                    determined the object literal to setState.
+   */
+  createStateSetter: function(funcReturningState) {
+    return ReactStateSetters.createStateSetter(this, funcReturningState);
+  },
+
+  /**
+   * Returns a single-argument callback that can be used to update a single
+   * key in the component's state.
+   *
+   * For example, these statements are equivalent:
+   *
+   *   this.setState({x: 1});
+   *   this.createStateKeySetter('x')(1);
+   *
+   * Note: this is memoized function, which makes it inexpensive to call.
+   *
+   * @param {string} key The key in the state that you should update.
+   * @return {function} callback of 1 argument which calls setState() with
+   *                    the provided keyName and callback argument.
+   */
+  createStateKeySetter: function(key) {
+    return ReactStateSetters.createStateKeySetter(this, key);
+  }
+};
+
+module.exports = ReactStateSetters;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTestUtils.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactTestUtils
+ */
+
+"use strict";
+
+var EventConstants = require("./EventConstants");
+var EventPluginHub = require("./EventPluginHub");
+var EventPropagators = require("./EventPropagators");
+var React = require("./React");
+var ReactElement = require("./ReactElement");
+var ReactBrowserEventEmitter = require("./ReactBrowserEventEmitter");
+var ReactMount = require("./ReactMount");
+var ReactTextComponent = require("./ReactTextComponent");
+var ReactUpdates = require("./ReactUpdates");
+var SyntheticEvent = require("./SyntheticEvent");
+
+var assign = require("./Object.assign");
+
+var topLevelTypes = EventConstants.topLevelTypes;
+
+function Event(suffix) {}
+
+/**
+ * @class ReactTestUtils
+ */
+
+/**
+ * Todo: Support the entire DOM.scry query syntax. For now, these simple
+ * utilities will suffice for testing purposes.
+ * @lends ReactTestUtils
+ */
+var ReactTestUtils = {
+  renderIntoDocument: function(instance) {
+    var div = document.createElement('div');
+    // None of our tests actually require attaching the container to the
+    // DOM, and doing so creates a mess that we rely on test isolation to
+    // clean up, so we're going to stop honoring the name of this method
+    // (and probably rename it eventually) if no problems arise.
+    // document.documentElement.appendChild(div);
+    return React.render(instance, div);
+  },
+
+  isElement: function(element) {
+    return ReactElement.isValidElement(element);
+  },
+
+  isElementOfType: function(inst, convenienceConstructor) {
+    return (
+      ReactElement.isValidElement(inst) &&
+      inst.type === convenienceConstructor.type
+    );
+  },
+
+  isDOMComponent: function(inst) {
+    return !!(inst && inst.mountComponent && inst.tagName);
+  },
+
+  isDOMComponentElement: function(inst) {
+    return !!(inst &&
+              ReactElement.isValidElement(inst) &&
+              !!inst.tagName);
+  },
+
+  isCompositeComponent: function(inst) {
+    return typeof inst.render === 'function' &&
+           typeof inst.setState === 'function';
+  },
+
+  isCompositeComponentWithType: function(inst, type) {
+    return !!(ReactTestUtils.isCompositeComponent(inst) &&
+             (inst.constructor === type.type));
+  },
+
+  isCompositeComponentElement: function(inst) {
+    if (!ReactElement.isValidElement(inst)) {
+      return false;
+    }
+    // We check the prototype of the type that will get mounted, not the
+    // instance itself. This is a future proof way of duck typing.
+    var prototype = inst.type.prototype;
+    return (
+      typeof prototype.render === 'function' &&
+      typeof prototype.setState === 'function'
+    );
+  },
+
+  isCompositeComponentElementWithType: function(inst, type) {
+    return !!(ReactTestUtils.isCompositeComponentElement(inst) &&
+             (inst.constructor === type));
+  },
+
+  isTextComponent: function(inst) {
+    return inst instanceof ReactTextComponent.type;
+  },
+
+  findAllInRenderedTree: function(inst, test) {
+    if (!inst) {
+      return [];
+    }
+    var ret = test(inst) ? [inst] : [];
+    if (ReactTestUtils.isDOMComponent(inst)) {
+      var renderedChildren = inst._renderedChildren;
+      var key;
+      for (key in renderedChildren) {
+        if (!renderedChildren.hasOwnProperty(key)) {
+          continue;
+        }
+        ret = ret.concat(
+          ReactTestUtils.findAllInRenderedTree(renderedChildren[key], test)
+        );
+      }
+    } else if (ReactTestUtils.isCompositeComponent(inst)) {
+      ret = ret.concat(
+        ReactTestUtils.findAllInRenderedTree(inst._renderedComponent, test)
+      );
+    }
+    return ret;
+  },
+
+  /**
+   * Finds all instance of components in the rendered tree that are DOM
+   * components with the class name matching `className`.
+   * @return an array of all the matches.
+   */
+  scryRenderedDOMComponentsWithClass: function(root, className) {
+    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+      var instClassName = inst.props.className;
+      return ReactTestUtils.isDOMComponent(inst) && (
+        instClassName &&
+        (' ' + instClassName + ' ').indexOf(' ' + className + ' ') !== -1
+      );
+    });
+  },
+
+  /**
+   * Like scryRenderedDOMComponentsWithClass but expects there to be one result,
+   * and returns that one result, or throws exception if there is any other
+   * number of matches besides one.
+   * @return {!ReactDOMComponent} The one match.
+   */
+  findRenderedDOMComponentWithClass: function(root, className) {
+    var all =
+      ReactTestUtils.scryRenderedDOMComponentsWithClass(root, className);
+    if (all.length !== 1) {
+      throw new Error('Did not find exactly one match for class:' + className);
+    }
+    return all[0];
+  },
+
+
+  /**
+   * Finds all instance of components in the rendered tree that are DOM
+   * components with the tag name matching `tagName`.
+   * @return an array of all the matches.
+   */
+  scryRenderedDOMComponentsWithTag: function(root, tagName) {
+    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+      return ReactTestUtils.isDOMComponent(inst) &&
+            inst.tagName === tagName.toUpperCase();
+    });
+  },
+
+  /**
+   * Like scryRenderedDOMComponentsWithTag but expects there to be one result,
+   * and returns that one result, or throws exception if there is any other
+   * number of matches besides one.
+   * @return {!ReactDOMComponent} The one match.
+   */
+  findRenderedDOMComponentWithTag: function(root, tagName) {
+    var all = ReactTestUtils.scryRenderedDOMComponentsWithTag(root, tagName);
+    if (all.length !== 1) {
+      throw new Error('Did not find exactly one match for tag:' + tagName);
+    }
+    return all[0];
+  },
+
+
+  /**
+   * Finds all instances of components with type equal to `componentType`.
+   * @return an array of all the matches.
+   */
+  scryRenderedComponentsWithType: function(root, componentType) {
+    return ReactTestUtils.findAllInRenderedTree(root, function(inst) {
+      return ReactTestUtils.isCompositeComponentWithType(
+        inst,
+        componentType
+      );
+    });
+  },
+
+  /**
+   * Same as `scryRenderedComponentsWithType` but expects there to be one result
+   * and returns that one result, or throws exception if there is any other
+   * number of matches besides one.
+   * @return {!ReactComponent} The one match.
+   */
+  findRenderedComponentWithType: function(root, componentType) {
+    var all = ReactTestUtils.scryRenderedComponentsWithType(
+      root,
+      componentType
+    );
+    if (all.length !== 1) {
+      throw new Error(
+        'Did not find exactly one match for componentType:' + componentType
+      );
+    }
+    return all[0];
+  },
+
+  /**
+   * Pass a mocked component module to this method to augment it with
+   * useful methods that allow it to be used as a dummy React component.
+   * Instead of rendering as usual, the component will become a simple
+   * <div> containing any provided children.
+   *
+   * @param {object} module the mock function object exported from a
+   *                        module that defines the component to be mocked
+   * @param {?string} mockTagName optional dummy root tag name to return
+   *                              from render method (overrides
+   *                              module.mockTagName if provided)
+   * @return {object} the ReactTestUtils object (for chaining)
+   */
+  mockComponent: function(module, mockTagName) {
+    mockTagName = mockTagName || module.mockTagName || "div";
+
+    var ConvenienceConstructor = React.createClass({displayName: "ConvenienceConstructor",
+      render: function() {
+        return React.createElement(
+          mockTagName,
+          null,
+          this.props.children
+        );
+      }
+    });
+
+    module.mockImplementation(ConvenienceConstructor);
+
+    module.type = ConvenienceConstructor.type;
+    module.isReactLegacyFactory = true;
+
+    return this;
+  },
+
+  /**
+   * Simulates a top level event being dispatched from a raw event that occured
+   * on an `Element` node.
+   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`
+   * @param {!Element} node The dom to simulate an event occurring on.
+   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
+   */
+  simulateNativeEventOnNode: function(topLevelType, node, fakeNativeEvent) {
+    fakeNativeEvent.target = node;
+    ReactBrowserEventEmitter.ReactEventListener.dispatchEvent(
+      topLevelType,
+      fakeNativeEvent
+    );
+  },
+
+  /**
+   * Simulates a top level event being dispatched from a raw event that occured
+   * on the `ReactDOMComponent` `comp`.
+   * @param topLevelType {Object} A type from `EventConstants.topLevelTypes`.
+   * @param comp {!ReactDOMComponent}
+   * @param {?Event} fakeNativeEvent Fake native event to use in SyntheticEvent.
+   */
+  simulateNativeEventOnDOMComponent: function(
+      topLevelType,
+      comp,
+      fakeNativeEvent) {
+    ReactTestUtils.simulateNativeEventOnNode(
+      topLevelType,
+      comp.getDOMNode(),
+      fakeNativeEvent
+    );
+  },
+
+  nativeTouchData: function(x, y) {
+    return {
+      touches: [
+        {pageX: x, pageY: y}
+      ]
+    };
+  },
+
+  Simulate: null,
+  SimulateNative: {}
+};
+
+/**
+ * Exports:
+ *
+ * - `ReactTestUtils.Simulate.click(Element/ReactDOMComponent)`
+ * - `ReactTestUtils.Simulate.mouseMove(Element/ReactDOMComponent)`
+ * - `ReactTestUtils.Simulate.change(Element/ReactDOMComponent)`
+ * - ... (All keys from event plugin `eventTypes` objects)
+ */
+function makeSimulator(eventType) {
+  return function(domComponentOrNode, eventData) {
+    var node;
+    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
+      node = domComponentOrNode.getDOMNode();
+    } else if (domComponentOrNode.tagName) {
+      node = domComponentOrNode;
+    }
+
+    var fakeNativeEvent = new Event();
+    fakeNativeEvent.target = node;
+    // We don't use SyntheticEvent.getPooled in order to not have to worry about
+    // properly destroying any properties assigned from `eventData` upon release
+    var event = new SyntheticEvent(
+      ReactBrowserEventEmitter.eventNameDispatchConfigs[eventType],
+      ReactMount.getID(node),
+      fakeNativeEvent
+    );
+    assign(event, eventData);
+    EventPropagators.accumulateTwoPhaseDispatches(event);
+
+    ReactUpdates.batchedUpdates(function() {
+      EventPluginHub.enqueueEvents(event);
+      EventPluginHub.processEventQueue();
+    });
+  };
+}
+
+function buildSimulators() {
+  ReactTestUtils.Simulate = {};
+
+  var eventType;
+  for (eventType in ReactBrowserEventEmitter.eventNameDispatchConfigs) {
+    /**
+     * @param {!Element || ReactDOMComponent} domComponentOrNode
+     * @param {?object} eventData Fake event data to use in SyntheticEvent.
+     */
+    ReactTestUtils.Simulate[eventType] = makeSimulator(eventType);
+  }
+}
+
+// Rebuild ReactTestUtils.Simulate whenever event plugins are injected
+var oldInjectEventPluginOrder = EventPluginHub.injection.injectEventPluginOrder;
+EventPluginHub.injection.injectEventPluginOrder = function() {
+  oldInjectEventPluginOrder.apply(this, arguments);
+  buildSimulators();
+};
+var oldInjectEventPlugins = EventPluginHub.injection.injectEventPluginsByName;
+EventPluginHub.injection.injectEventPluginsByName = function() {
+  oldInjectEventPlugins.apply(this, arguments);
+  buildSimulators();
+};
+
+buildSimulators();
+
+/**
+ * Exports:
+ *
+ * - `ReactTestUtils.SimulateNative.click(Element/ReactDOMComponent)`
+ * - `ReactTestUtils.SimulateNative.mouseMove(Element/ReactDOMComponent)`
+ * - `ReactTestUtils.SimulateNative.mouseIn/ReactDOMComponent)`
+ * - `ReactTestUtils.SimulateNative.mouseOut(Element/ReactDOMComponent)`
+ * - ... (All keys from `EventConstants.topLevelTypes`)
+ *
+ * Note: Top level event types are a subset of the entire set of handler types
+ * (which include a broader set of "synthetic" events). For example, onDragDone
+ * is a synthetic event. Except when testing an event plugin or React's event
+ * handling code specifically, you probably want to use ReactTestUtils.Simulate
+ * to dispatch synthetic events.
+ */
+
+function makeNativeSimulator(eventType) {
+  return function(domComponentOrNode, nativeEventData) {
+    var fakeNativeEvent = new Event(eventType);
+    assign(fakeNativeEvent, nativeEventData);
+    if (ReactTestUtils.isDOMComponent(domComponentOrNode)) {
+      ReactTestUtils.simulateNativeEventOnDOMComponent(
+        eventType,
+        domComponentOrNode,
+        fakeNativeEvent
+      );
+    } else if (!!domComponentOrNode.tagName) {
+      // Will allow on actual dom nodes.
+      ReactTestUtils.simulateNativeEventOnNode(
+        eventType,
+        domComponentOrNode,
+        fakeNativeEvent
+      );
+    }
+  };
+}
+
+var eventType;
+for (eventType in topLevelTypes) {
+  // Event type is stored as 'topClick' - we transform that to 'click'
+  var convenienceName = eventType.indexOf('top') === 0 ?
+    eventType.charAt(3).toLowerCase() + eventType.substr(4) : eventType;
+  /**
+   * @param {!Element || ReactDOMComponent} domComponentOrNode
+   * @param {?Event} nativeEventData Fake native event to use in SyntheticEvent.
+   */
+  ReactTestUtils.SimulateNative[convenienceName] =
+    makeNativeSimulator(eventType);
+}
+
+module.exports = ReactTestUtils;
+
+},{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPluginHub":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginHub.js","./EventPropagators":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPropagators.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js","./ReactBrowserEventEmitter":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactBrowserEventEmitter.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactMount":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactMount.js","./ReactTextComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTextComponent.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./SyntheticEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticEvent.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTextComponent.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -13728,7 +15780,408 @@ ReactTextComponentFactory.type = ReactTextComponent;
 
 module.exports = ReactTextComponentFactory;
 
-},{"./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./escapeTextForBrowser":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/escapeTextForBrowser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
+},{"./DOMPropertyOperations":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/DOMPropertyOperations.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./ReactComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponent.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./escapeTextForBrowser":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/escapeTextForBrowser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionChildMapping.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks static-only
+ * @providesModule ReactTransitionChildMapping
+ */
+
+"use strict";
+
+var ReactChildren = require("./ReactChildren");
+
+var ReactTransitionChildMapping = {
+  /**
+   * Given `this.props.children`, return an object mapping key to child. Just
+   * simple syntactic sugar around ReactChildren.map().
+   *
+   * @param {*} children `this.props.children`
+   * @return {object} Mapping of key to child
+   */
+  getChildMapping: function(children) {
+    return ReactChildren.map(children, function(child) {
+      return child;
+    });
+  },
+
+  /**
+   * When you're adding or removing children some may be added or removed in the
+   * same render pass. We want to show *both* since we want to simultaneously
+   * animate elements in and out. This function takes a previous set of keys
+   * and a new set of keys and merges them with its best guess of the correct
+   * ordering. In the future we may expose some of the utilities in
+   * ReactMultiChild to make this easy, but for now React itself does not
+   * directly have this concept of the union of prevChildren and nextChildren
+   * so we implement it here.
+   *
+   * @param {object} prev prev children as returned from
+   * `ReactTransitionChildMapping.getChildMapping()`.
+   * @param {object} next next children as returned from
+   * `ReactTransitionChildMapping.getChildMapping()`.
+   * @return {object} a key set that contains all keys in `prev` and all keys
+   * in `next` in a reasonable order.
+   */
+  mergeChildMappings: function(prev, next) {
+    prev = prev || {};
+    next = next || {};
+
+    function getValueForKey(key) {
+      if (next.hasOwnProperty(key)) {
+        return next[key];
+      } else {
+        return prev[key];
+      }
+    }
+
+    // For each key of `next`, the list of keys to insert before that key in
+    // the combined list
+    var nextKeysPending = {};
+
+    var pendingKeys = [];
+    for (var prevKey in prev) {
+      if (next.hasOwnProperty(prevKey)) {
+        if (pendingKeys.length) {
+          nextKeysPending[prevKey] = pendingKeys;
+          pendingKeys = [];
+        }
+      } else {
+        pendingKeys.push(prevKey);
+      }
+    }
+
+    var i;
+    var childMapping = {};
+    for (var nextKey in next) {
+      if (nextKeysPending.hasOwnProperty(nextKey)) {
+        for (i = 0; i < nextKeysPending[nextKey].length; i++) {
+          var pendingNextKey = nextKeysPending[nextKey][i];
+          childMapping[nextKeysPending[nextKey][i]] = getValueForKey(
+            pendingNextKey
+          );
+        }
+      }
+      childMapping[nextKey] = getValueForKey(nextKey);
+    }
+
+    // Finally, add the keys which didn't appear before any key in `next`
+    for (i = 0; i < pendingKeys.length; i++) {
+      childMapping[pendingKeys[i]] = getValueForKey(pendingKeys[i]);
+    }
+
+    return childMapping;
+  }
+};
+
+module.exports = ReactTransitionChildMapping;
+
+},{"./ReactChildren":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactChildren.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionEvents.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactTransitionEvents
+ */
+
+"use strict";
+
+var ExecutionEnvironment = require("./ExecutionEnvironment");
+
+/**
+ * EVENT_NAME_MAP is used to determine which event fired when a
+ * transition/animation ends, based on the style property used to
+ * define that event.
+ */
+var EVENT_NAME_MAP = {
+  transitionend: {
+    'transition': 'transitionend',
+    'WebkitTransition': 'webkitTransitionEnd',
+    'MozTransition': 'mozTransitionEnd',
+    'OTransition': 'oTransitionEnd',
+    'msTransition': 'MSTransitionEnd'
+  },
+
+  animationend: {
+    'animation': 'animationend',
+    'WebkitAnimation': 'webkitAnimationEnd',
+    'MozAnimation': 'mozAnimationEnd',
+    'OAnimation': 'oAnimationEnd',
+    'msAnimation': 'MSAnimationEnd'
+  }
+};
+
+var endEvents = [];
+
+function detectEvents() {
+  var testEl = document.createElement('div');
+  var style = testEl.style;
+
+  // On some platforms, in particular some releases of Android 4.x,
+  // the un-prefixed "animation" and "transition" properties are defined on the
+  // style object but the events that fire will still be prefixed, so we need
+  // to check if the un-prefixed events are useable, and if not remove them
+  // from the map
+  if (!('AnimationEvent' in window)) {
+    delete EVENT_NAME_MAP.animationend.animation;
+  }
+
+  if (!('TransitionEvent' in window)) {
+    delete EVENT_NAME_MAP.transitionend.transition;
+  }
+
+  for (var baseEventName in EVENT_NAME_MAP) {
+    var baseEvents = EVENT_NAME_MAP[baseEventName];
+    for (var styleName in baseEvents) {
+      if (styleName in style) {
+        endEvents.push(baseEvents[styleName]);
+        break;
+      }
+    }
+  }
+}
+
+if (ExecutionEnvironment.canUseDOM) {
+  detectEvents();
+}
+
+// We use the raw {add|remove}EventListener() call because EventListener
+// does not know how to remove event listeners and we really should
+// clean up. Also, these events are not triggered in older browsers
+// so we should be A-OK here.
+
+function addEventListener(node, eventName, eventListener) {
+  node.addEventListener(eventName, eventListener, false);
+}
+
+function removeEventListener(node, eventName, eventListener) {
+  node.removeEventListener(eventName, eventListener, false);
+}
+
+var ReactTransitionEvents = {
+  addEndEventListener: function(node, eventListener) {
+    if (endEvents.length === 0) {
+      // If CSS transitions are not supported, trigger an "end animation"
+      // event immediately.
+      window.setTimeout(eventListener, 0);
+      return;
+    }
+    endEvents.forEach(function(endEvent) {
+      addEventListener(node, endEvent, eventListener);
+    });
+  },
+
+  removeEndEventListener: function(node, eventListener) {
+    if (endEvents.length === 0) {
+      return;
+    }
+    endEvents.forEach(function(endEvent) {
+      removeEventListener(node, endEvent, eventListener);
+    });
+  }
+};
+
+module.exports = ReactTransitionEvents;
+
+},{"./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionGroup.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactTransitionGroup
+ */
+
+"use strict";
+
+var React = require("./React");
+var ReactTransitionChildMapping = require("./ReactTransitionChildMapping");
+
+var assign = require("./Object.assign");
+var cloneWithProps = require("./cloneWithProps");
+var emptyFunction = require("./emptyFunction");
+
+var ReactTransitionGroup = React.createClass({
+  displayName: 'ReactTransitionGroup',
+
+  propTypes: {
+    component: React.PropTypes.any,
+    childFactory: React.PropTypes.func
+  },
+
+  getDefaultProps: function() {
+    return {
+      component: 'span',
+      childFactory: emptyFunction.thatReturnsArgument
+    };
+  },
+
+  getInitialState: function() {
+    return {
+      children: ReactTransitionChildMapping.getChildMapping(this.props.children)
+    };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var nextChildMapping = ReactTransitionChildMapping.getChildMapping(
+      nextProps.children
+    );
+    var prevChildMapping = this.state.children;
+
+    this.setState({
+      children: ReactTransitionChildMapping.mergeChildMappings(
+        prevChildMapping,
+        nextChildMapping
+      )
+    });
+
+    var key;
+
+    for (key in nextChildMapping) {
+      var hasPrev = prevChildMapping && prevChildMapping.hasOwnProperty(key);
+      if (nextChildMapping[key] && !hasPrev &&
+          !this.currentlyTransitioningKeys[key]) {
+        this.keysToEnter.push(key);
+      }
+    }
+
+    for (key in prevChildMapping) {
+      var hasNext = nextChildMapping && nextChildMapping.hasOwnProperty(key);
+      if (prevChildMapping[key] && !hasNext &&
+          !this.currentlyTransitioningKeys[key]) {
+        this.keysToLeave.push(key);
+      }
+    }
+
+    // If we want to someday check for reordering, we could do it here.
+  },
+
+  componentWillMount: function() {
+    this.currentlyTransitioningKeys = {};
+    this.keysToEnter = [];
+    this.keysToLeave = [];
+  },
+
+  componentDidUpdate: function() {
+    var keysToEnter = this.keysToEnter;
+    this.keysToEnter = [];
+    keysToEnter.forEach(this.performEnter);
+
+    var keysToLeave = this.keysToLeave;
+    this.keysToLeave = [];
+    keysToLeave.forEach(this.performLeave);
+  },
+
+  performEnter: function(key) {
+    this.currentlyTransitioningKeys[key] = true;
+
+    var component = this.refs[key];
+
+    if (component.componentWillEnter) {
+      component.componentWillEnter(
+        this._handleDoneEntering.bind(this, key)
+      );
+    } else {
+      this._handleDoneEntering(key);
+    }
+  },
+
+  _handleDoneEntering: function(key) {
+    var component = this.refs[key];
+    if (component.componentDidEnter) {
+      component.componentDidEnter();
+    }
+
+    delete this.currentlyTransitioningKeys[key];
+
+    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
+      this.props.children
+    );
+
+    if (!currentChildMapping || !currentChildMapping.hasOwnProperty(key)) {
+      // This was removed before it had fully entered. Remove it.
+      this.performLeave(key);
+    }
+  },
+
+  performLeave: function(key) {
+    this.currentlyTransitioningKeys[key] = true;
+
+    var component = this.refs[key];
+    if (component.componentWillLeave) {
+      component.componentWillLeave(this._handleDoneLeaving.bind(this, key));
+    } else {
+      // Note that this is somewhat dangerous b/c it calls setState()
+      // again, effectively mutating the component before all the work
+      // is done.
+      this._handleDoneLeaving(key);
+    }
+  },
+
+  _handleDoneLeaving: function(key) {
+    var component = this.refs[key];
+
+    if (component.componentDidLeave) {
+      component.componentDidLeave();
+    }
+
+    delete this.currentlyTransitioningKeys[key];
+
+    var currentChildMapping = ReactTransitionChildMapping.getChildMapping(
+      this.props.children
+    );
+
+    if (currentChildMapping && currentChildMapping.hasOwnProperty(key)) {
+      // This entered again before it fully left. Add it again.
+      this.performEnter(key);
+    } else {
+      var newChildren = assign({}, this.state.children);
+      delete newChildren[key];
+      this.setState({children: newChildren});
+    }
+  },
+
+  render: function() {
+    // TODO: we could get rid of the need for the wrapper node
+    // by cloning a single child
+    var childrenToRender = {};
+    for (var key in this.state.children) {
+      var child = this.state.children[key];
+      if (child) {
+        // You may need to apply reactive updates to a child as it is leaving.
+        // The normal React way to do it won't work since the child will have
+        // already been removed. In case you need this behavior you can provide
+        // a childFactory function to wrap every child, even the ones that are
+        // leaving.
+        childrenToRender[key] = cloneWithProps(
+          this.props.childFactory(child),
+          {ref: key}
+        );
+      }
+    }
+    return React.createElement(
+      this.props.component,
+      this.props,
+      childrenToRender
+    );
+  }
+});
+
+module.exports = ReactTransitionGroup;
+
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js","./ReactTransitionChildMapping":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionChildMapping.js","./cloneWithProps":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/cloneWithProps.js","./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -14018,7 +16471,63 @@ var ReactUpdates = {
 module.exports = ReactUpdates;
 
 }).call(this,require('_process'))
-},{"./CallbackQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./Transaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SVGDOMPropertyConfig.js":[function(require,module,exports){
+
+},{"./CallbackQueue":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/CallbackQueue.js","./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./PooledClass":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/PooledClass.js","./ReactCurrentOwner":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCurrentOwner.js","./ReactPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPerf.js","./Transaction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Transaction.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactWithAddons.js":[function(require,module,exports){
+(function (process){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactWithAddons
+ */
+
+/**
+ * This module exists purely in the open source project, and is meant as a way
+ * to create a separate standalone build of React. This build has "addons", or
+ * functionality we've built and think might be useful but doesn't have a good
+ * place to live inside React core.
+ */
+
+"use strict";
+
+var LinkedStateMixin = require("./LinkedStateMixin");
+var React = require("./React");
+var ReactComponentWithPureRenderMixin =
+  require("./ReactComponentWithPureRenderMixin");
+var ReactCSSTransitionGroup = require("./ReactCSSTransitionGroup");
+var ReactTransitionGroup = require("./ReactTransitionGroup");
+var ReactUpdates = require("./ReactUpdates");
+
+var cx = require("./cx");
+var cloneWithProps = require("./cloneWithProps");
+var update = require("./update");
+
+React.addons = {
+  CSSTransitionGroup: ReactCSSTransitionGroup,
+  LinkedStateMixin: LinkedStateMixin,
+  PureRenderMixin: ReactComponentWithPureRenderMixin,
+  TransitionGroup: ReactTransitionGroup,
+
+  batchedUpdates: ReactUpdates.batchedUpdates,
+  classSet: cx,
+  cloneWithProps: cloneWithProps,
+  update: update
+};
+
+if ("production" !== process.env.NODE_ENV) {
+  React.addons.Perf = require("./ReactDefaultPerf");
+  React.addons.TestUtils = require("./ReactTestUtils");
+}
+
+module.exports = React;
+
+}).call(this,require('_process'))
+
+},{"./LinkedStateMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/LinkedStateMixin.js","./React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js","./ReactCSSTransitionGroup":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCSSTransitionGroup.js","./ReactComponentWithPureRenderMixin":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactComponentWithPureRenderMixin.js","./ReactDefaultPerf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDefaultPerf.js","./ReactTestUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTestUtils.js","./ReactTransitionGroup":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTransitionGroup.js","./ReactUpdates":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactUpdates.js","./cloneWithProps":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/cloneWithProps.js","./cx":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/cx.js","./update":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/update.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SVGDOMPropertyConfig.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -14764,6 +17273,7 @@ var SimpleEventPlugin = {
 module.exports = SimpleEventPlugin;
 
 }).call(this,require('_process'))
+
 },{"./EventConstants":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventConstants.js","./EventPluginUtils":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPluginUtils.js","./EventPropagators":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/EventPropagators.js","./SyntheticClipboardEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticClipboardEvent.js","./SyntheticDragEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticDragEvent.js","./SyntheticEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticEvent.js","./SyntheticFocusEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticFocusEvent.js","./SyntheticKeyboardEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticKeyboardEvent.js","./SyntheticMouseEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticMouseEvent.js","./SyntheticTouchEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticTouchEvent.js","./SyntheticUIEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticUIEvent.js","./SyntheticWheelEvent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticWheelEvent.js","./getEventCharCode":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getEventCharCode.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/SyntheticClipboardEvent.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -15721,6 +18231,7 @@ var Transaction = {
 module.exports = Transaction;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ViewportMetrics.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -15819,6 +18330,7 @@ function accumulateInto(current, next) {
 module.exports = accumulateInto;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/adler32.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -15927,7 +18439,67 @@ function camelizeStyleName(string) {
 
 module.exports = camelizeStyleName;
 
-},{"./camelize":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/camelize.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/containsNode.js":[function(require,module,exports){
+},{"./camelize":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/camelize.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/cloneWithProps.js":[function(require,module,exports){
+(function (process){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks
+ * @providesModule cloneWithProps
+ */
+
+"use strict";
+
+var ReactElement = require("./ReactElement");
+var ReactPropTransferer = require("./ReactPropTransferer");
+
+var keyOf = require("./keyOf");
+var warning = require("./warning");
+
+var CHILDREN_PROP = keyOf({children: null});
+
+/**
+ * Sometimes you want to change the props of a child passed to you. Usually
+ * this is to add a CSS class.
+ *
+ * @param {object} child child component you'd like to clone
+ * @param {object} props props you'd like to modify. They will be merged
+ * as if you used `transferPropsTo()`.
+ * @return {object} a clone of child with props merged in.
+ */
+function cloneWithProps(child, props) {
+  if ("production" !== process.env.NODE_ENV) {
+    ("production" !== process.env.NODE_ENV ? warning(
+      !child.ref,
+      'You are calling cloneWithProps() on a child with a ref. This is ' +
+      'dangerous because you\'re creating a new child which will not be ' +
+      'added as a ref to its parent.'
+    ) : null);
+  }
+
+  var newProps = ReactPropTransferer.mergeProps(props, child.props);
+
+  // Use `child.props.children` if it is provided.
+  if (!newProps.hasOwnProperty(CHILDREN_PROP) &&
+      child.props.hasOwnProperty(CHILDREN_PROP)) {
+    newProps.children = child.props.children;
+  }
+
+  // The current API doesn't retain _owner and _context, which is why this
+  // doesn't use ReactElement.cloneAndReplaceProps.
+  return ReactElement.createElement(child.type, newProps);
+}
+
+module.exports = cloneWithProps;
+
+}).call(this,require('_process'))
+
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactPropTransferer":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTransferer.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/containsNode.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -16118,6 +18690,7 @@ function createFullPageComponent(tag) {
 module.exports = createFullPageComponent;
 
 }).call(this,require('_process'))
+
 },{"./ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/createNodesFromMarkup.js":[function(require,module,exports){
 (function (process){
 /**
@@ -16208,7 +18781,47 @@ function createNodesFromMarkup(markup, handleScript) {
 module.exports = createNodesFromMarkup;
 
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./createArrayFrom":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/createArrayFrom.js","./getMarkupWrap":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/dangerousStyleValue.js":[function(require,module,exports){
+
+},{"./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./createArrayFrom":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/createArrayFrom.js","./getMarkupWrap":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getMarkupWrap.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/cx.js":[function(require,module,exports){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule cx
+ */
+
+/**
+ * This function is used to mark string literals representing CSS class names
+ * so that they can be transformed statically. This allows for modularization
+ * and minification of CSS class names.
+ *
+ * In static_upstream, this function is actually implemented, but it should
+ * eventually be replaced with something more descriptive, and the transform
+ * that is used in the main stack should be ported for use elsewhere.
+ *
+ * @param string|object className to modularize, or an object of key/values.
+ *                      In the object case, the values are conditions that
+ *                      determine if the className keys should be included.
+ * @param [string ...]  Variable list of classNames in the string case.
+ * @return string       Renderable space-separated CSS className.
+ */
+function cx(classNames) {
+  if (typeof classNames == 'object') {
+    return Object.keys(classNames).filter(function(className) {
+      return classNames[className];
+    }).join(' ');
+  } else {
+    return Array.prototype.join.call(arguments, ' ');
+  }
+}
+
+module.exports = cx;
+
+},{}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/dangerousStyleValue.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
  * All rights reserved.
@@ -16317,6 +18930,7 @@ function deprecated(namespace, oldName, newName, ctx, fn) {
 module.exports = deprecated;
 
 }).call(this,require('_process'))
+
 },{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -16375,6 +18989,7 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = emptyObject;
 
 }).call(this,require('_process'))
+
 },{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/escapeTextForBrowser.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -16485,6 +19100,7 @@ function flattenChildren(children) {
 module.exports = flattenChildren;
 
 }).call(this,require('_process'))
+
 },{"./ReactTextComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactTextComponent.js","./traverseAllChildren":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/traverseAllChildren.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/focusNode.js":[function(require,module,exports){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -16926,6 +19542,7 @@ function getMarkupWrap(nodeName) {
 module.exports = getMarkupWrap;
 
 }).call(this,require('_process'))
+
 },{"./ExecutionEnvironment":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ExecutionEnvironment.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/getNodeForCharacterOffset.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17301,6 +19918,7 @@ function instantiateReactComponent(element, parentCompositeType) {
 module.exports = instantiateReactComponent;
 
 }).call(this,require('_process'))
+
 },{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactEmptyComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactEmptyComponent.js","./ReactLegacyElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactLegacyElement.js","./ReactNativeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactNativeComponent.js","./warning":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js":[function(require,module,exports){
 (function (process){
 /**
@@ -17358,6 +19976,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 module.exports = invariant;
 
 }).call(this,require('_process'))
+
 },{"_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/isEventSupported.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17616,6 +20235,7 @@ var keyMirror = function(obj) {
 module.exports = keyMirror;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -17773,6 +20393,7 @@ function monitorCodeUse(eventName, data) {
 module.exports = monitorCodeUse;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/onlyChild.js":[function(require,module,exports){
 (function (process){
 /**
@@ -17813,6 +20434,7 @@ function onlyChild(children) {
 module.exports = onlyChild;
 
 }).call(this,require('_process'))
+
 },{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/performance.js":[function(require,module,exports){
 /**
  * Copyright 2013-2014, Facebook, Inc.
@@ -18101,6 +20723,7 @@ function toArray(obj) {
 module.exports = toArray;
 
 }).call(this,require('_process'))
+
 },{"./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/traverseAllChildren.js":[function(require,module,exports){
 (function (process){
 /**
@@ -18284,7 +20907,177 @@ function traverseAllChildren(children, callback, traverseContext) {
 module.exports = traverseAllChildren;
 
 }).call(this,require('_process'))
-},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js":[function(require,module,exports){
+
+},{"./ReactElement":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactElement.js","./ReactInstanceHandles":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactInstanceHandles.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/update.js":[function(require,module,exports){
+(function (process){
+/**
+ * Copyright 2013-2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule update
+ */
+
+"use strict";
+
+var assign = require("./Object.assign");
+var keyOf = require("./keyOf");
+var invariant = require("./invariant");
+
+function shallowCopy(x) {
+  if (Array.isArray(x)) {
+    return x.concat();
+  } else if (x && typeof x === 'object') {
+    return assign(new x.constructor(), x);
+  } else {
+    return x;
+  }
+}
+
+var COMMAND_PUSH = keyOf({$push: null});
+var COMMAND_UNSHIFT = keyOf({$unshift: null});
+var COMMAND_SPLICE = keyOf({$splice: null});
+var COMMAND_SET = keyOf({$set: null});
+var COMMAND_MERGE = keyOf({$merge: null});
+var COMMAND_APPLY = keyOf({$apply: null});
+
+var ALL_COMMANDS_LIST = [
+  COMMAND_PUSH,
+  COMMAND_UNSHIFT,
+  COMMAND_SPLICE,
+  COMMAND_SET,
+  COMMAND_MERGE,
+  COMMAND_APPLY
+];
+
+var ALL_COMMANDS_SET = {};
+
+ALL_COMMANDS_LIST.forEach(function(command) {
+  ALL_COMMANDS_SET[command] = true;
+});
+
+function invariantArrayCase(value, spec, command) {
+  ("production" !== process.env.NODE_ENV ? invariant(
+    Array.isArray(value),
+    'update(): expected target of %s to be an array; got %s.',
+    command,
+    value
+  ) : invariant(Array.isArray(value)));
+  var specValue = spec[command];
+  ("production" !== process.env.NODE_ENV ? invariant(
+    Array.isArray(specValue),
+    'update(): expected spec of %s to be an array; got %s. ' +
+    'Did you forget to wrap your parameter in an array?',
+    command,
+    specValue
+  ) : invariant(Array.isArray(specValue)));
+}
+
+function update(value, spec) {
+  ("production" !== process.env.NODE_ENV ? invariant(
+    typeof spec === 'object',
+    'update(): You provided a key path to update() that did not contain one ' +
+    'of %s. Did you forget to include {%s: ...}?',
+    ALL_COMMANDS_LIST.join(', '),
+    COMMAND_SET
+  ) : invariant(typeof spec === 'object'));
+
+  if (spec.hasOwnProperty(COMMAND_SET)) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      Object.keys(spec).length === 1,
+      'Cannot have more than one key in an object with %s',
+      COMMAND_SET
+    ) : invariant(Object.keys(spec).length === 1));
+
+    return spec[COMMAND_SET];
+  }
+
+  var nextValue = shallowCopy(value);
+
+  if (spec.hasOwnProperty(COMMAND_MERGE)) {
+    var mergeObj = spec[COMMAND_MERGE];
+    ("production" !== process.env.NODE_ENV ? invariant(
+      mergeObj && typeof mergeObj === 'object',
+      'update(): %s expects a spec of type \'object\'; got %s',
+      COMMAND_MERGE,
+      mergeObj
+    ) : invariant(mergeObj && typeof mergeObj === 'object'));
+    ("production" !== process.env.NODE_ENV ? invariant(
+      nextValue && typeof nextValue === 'object',
+      'update(): %s expects a target of type \'object\'; got %s',
+      COMMAND_MERGE,
+      nextValue
+    ) : invariant(nextValue && typeof nextValue === 'object'));
+    assign(nextValue, spec[COMMAND_MERGE]);
+  }
+
+  if (spec.hasOwnProperty(COMMAND_PUSH)) {
+    invariantArrayCase(value, spec, COMMAND_PUSH);
+    spec[COMMAND_PUSH].forEach(function(item) {
+      nextValue.push(item);
+    });
+  }
+
+  if (spec.hasOwnProperty(COMMAND_UNSHIFT)) {
+    invariantArrayCase(value, spec, COMMAND_UNSHIFT);
+    spec[COMMAND_UNSHIFT].forEach(function(item) {
+      nextValue.unshift(item);
+    });
+  }
+
+  if (spec.hasOwnProperty(COMMAND_SPLICE)) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      Array.isArray(value),
+      'Expected %s target to be an array; got %s',
+      COMMAND_SPLICE,
+      value
+    ) : invariant(Array.isArray(value)));
+    ("production" !== process.env.NODE_ENV ? invariant(
+      Array.isArray(spec[COMMAND_SPLICE]),
+      'update(): expected spec of %s to be an array of arrays; got %s. ' +
+      'Did you forget to wrap your parameters in an array?',
+      COMMAND_SPLICE,
+      spec[COMMAND_SPLICE]
+    ) : invariant(Array.isArray(spec[COMMAND_SPLICE])));
+    spec[COMMAND_SPLICE].forEach(function(args) {
+      ("production" !== process.env.NODE_ENV ? invariant(
+        Array.isArray(args),
+        'update(): expected spec of %s to be an array of arrays; got %s. ' +
+        'Did you forget to wrap your parameters in an array?',
+        COMMAND_SPLICE,
+        spec[COMMAND_SPLICE]
+      ) : invariant(Array.isArray(args)));
+      nextValue.splice.apply(nextValue, args);
+    });
+  }
+
+  if (spec.hasOwnProperty(COMMAND_APPLY)) {
+    ("production" !== process.env.NODE_ENV ? invariant(
+      typeof spec[COMMAND_APPLY] === 'function',
+      'update(): expected spec of %s to be a function; got %s.',
+      COMMAND_APPLY,
+      spec[COMMAND_APPLY]
+    ) : invariant(typeof spec[COMMAND_APPLY] === 'function'));
+    nextValue = spec[COMMAND_APPLY](nextValue);
+  }
+
+  for (var k in spec) {
+    if (!(ALL_COMMANDS_SET.hasOwnProperty(k) && ALL_COMMANDS_SET[k])) {
+      nextValue[k] = update(value[k], spec[k]);
+    }
+  }
+
+  return nextValue;
+}
+
+module.exports = update;
+
+}).call(this,require('_process'))
+
+},{"./Object.assign":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/Object.assign.js","./invariant":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/invariant.js","./keyOf":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/keyOf.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/warning.js":[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014, Facebook, Inc.
@@ -18329,120 +21122,134 @@ if ("production" !== process.env.NODE_ENV) {
 module.exports = warning;
 
 }).call(this,require('_process'))
+
 },{"./emptyFunction":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/emptyFunction.js","_process":"/Users/contra/Projects/react-tabbar/node_modules/browserify/node_modules/process/browser.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/react.js":[function(require,module,exports){
 module.exports = require('./lib/React');
 
 },{"./lib/React":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/React.js"}],"/Users/contra/Projects/react-tabbar/src/index.js":[function(require,module,exports){
-/* global window */
-
 'use strict';
-var ReactCompositeComponent = require('react/lib/ReactCompositeComponent');
-var DOM = require('react/lib/ReactDOM');
-var PropTypes = require('react/lib/ReactPropTypes');
 
-var types = {
-};
+var React = require('react/addons');
+var cx = React.addons.classSet;
+var DOM = React.DOM;
+var PropTypes = React.PropTypes;
+var each = require('lodash.forEach');
 
-var tabbar = ReactCompositeComponent.createClass({
-
+var tabbar = React.createClass({
   displayName: 'TabBar',
-  propTypes: types,
-
-  shouldComponentUpdate: function(){
-    return false;
+  propTypes: {
+    defaultTab: PropTypes.string,
+    // TODO: validate tabs in proptypes
+    tabs: PropTypes.object.isRequired,
+    onTabChange: PropTypes.func
+    // TODO: option to destroy not hide on active switch
+    // TODO: animation options
   },
 
-  handleTabClick: function(tab){
-    this.refs[this.current].getDOMNode().classList.remove('active');
-    this.refs[tab].getDOMNode().classList.add('active');
+  getInitialState: function(){
+    return {
+      activeTab: this.props.defaultTab
+    };
+  },
+  
+  handleTabClick: function(tabName){
+    // already active, ignore click
+    if (this.state.activeTab === tabName) {
+      return;
+    }
+    this.setState({
+      activeTab: tabName
+    });
 
-    this.refs[this.current+'View'].getDOMNode().classList.remove('active');
-    this.refs[tab+'View'].getDOMNode().classList.add('active');
-
-    this.current = tab;
-
-    if (this.props.onTabChange != null) {
-      this.props.onTabChange(tab, this.props.tabs[tab]);
+    if (typeof this.props.onTabChange === 'function') {
+      this.props.onTabChange(tabName, this.props.tabs[tabName]);
     }
   },
 
   render: function(){
-
-    var self = this;
-    var tabs = [];
     var views = [];
-    
-    this.current = this.props.default;
+    var tabs = [];
 
-    // iterate over TABS
+    each(this.props.tabs, function(tab, tabName){
+      var tabNode = [];
+      var viewNode;
+      var isActiveTab = (this.state.activeTab === tabName);
 
-    Object.keys(this.props.tabs).forEach(function(tab){
-
-      var currentTab = self.props.tabs[tab];
-      var tabNode, viewNode;
-
-      // element specified 
-      if (currentTab.el !== undefined) {
-        tabNode = el;
+      // make sure the view is valid before we do anything else
+      if (typeof tab.view !== 'function') {
+        throw new Error('Invalid view attribute for tab ' + tabName);
       }
 
-      // icon specified 
-      else if (currentTab.icon !== undefined) {
-        tabNode = []
+      // render the view given and wrap it, thats thew viewNode
+      viewNode = DOM.div({
+        key: tabName+'-view',
+        className: cx({
+          'tabbar-view': true,
+          active: isActiveTab
+        })
+      }, tab.view());
 
-        tabNode.push(DOM.span({className: currentTab.icon}));
+      // if they specified a custom el just use that
+      if (typeof tab.el !== 'undefined') {
+        tabNode = tab.el;
+      }
 
-        if (currentTab.displayLabel) {
-          tabNode.push(DOM.span(null, currentTab.label))
+      if (tab.icon) {
+        // icon is a className
+        if (typeof tab.icon === 'string') {
+          tabNode.push(DOM.i({
+            key: tabName + '-tab-icon',
+            className: 'tabbar-icon ' + tab.icon
+          }));
+        // icon is a renderable
+        } else {
+          tabNode.push(tab.icon);
         }
       }
 
-      // just use label
-      else {
-        tabNode = DOM.span(null, currentTab.label);
+      if (tab.label) {
+        // label is text
+        if (typeof tab.label === 'string') {
+          tabNode.push(DOM.span({
+            key: tabName + '-tab-label',
+            className: 'tabbar-label'
+          }, tab.label));
+        // label is a renderable
+        } else {
+          tabNode.push(tab.label);
+        }
       }
 
-      // set active tab
-      var claz = 'tabbar-tab';
-      if (tab === self.current) {
-        claz += ' active'
-      }
-
+      // wrap what we ended up with in a div
       tabNode = DOM.div({
-        className: claz, 
-        ref: tab,
-        onClick: self.handleTabClick.bind(null, tab)
+        key: tabName+'-tab',
+        className: cx({
+          'tabbar-tab': true,
+          active: isActiveTab
+        }),
+        'data-tabname': tabName,
+        onClick: this.handleTabClick.bind(this, tabName)
       }, tabNode);
-
-      var viewClaz = 'tabbar-view'
-      if (tab === self.current) {
-        viewClaz += ' active'
-      }
-
-      viewNode = DOM.div({
-        className: viewClaz,
-        ref: tab+'View'
-      }, self.props.tabs[tab].view());
 
       tabs.push(tabNode);
       views.push(viewNode);
+    }, this);
 
-    });
-
-    return DOM.div({},
-      DOM.div({className: 'tabbar-main'},
-        views
-      ),
-      DOM.div({className: 'tabbar-bar'},
-        tabs
-      )
+    return DOM.div({
+      className: 'tabbar'
+    },
+      DOM.div({
+        className: 'tabbar-main'
+      }, views),
+      DOM.div({
+        className: 'tabbar-bar'
+      }, tabs)
     );
   }
 });
 
 module.exports = tabbar;
-
-},{"react/lib/ReactCompositeComponent":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactCompositeComponent.js","react/lib/ReactDOM":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactDOM.js","react/lib/ReactPropTypes":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactPropTypes.js"}]},{},["./samples/sandbox/src/index.js"])("./samples/sandbox/src/index.js")
+},{"lodash.forEach":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/index.js","react/addons":"/Users/contra/Projects/react-tabbar/node_modules/react/addons.js"}]},{},["./samples/sandbox/src/index.js"])("./samples/sandbox/src/index.js")
 });
 
 

@@ -101,6 +101,6 @@ gulp.task('watch', function(){
     gulp.start('samples');
   });
 });
-
+lr.listen();
 
 gulp.task('default', ['js', 'samples', 'sample-server', 'watch']);
