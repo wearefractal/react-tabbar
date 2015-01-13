@@ -38,6 +38,21 @@ var tabbar = React.createClass({
   },
 
   render: function(){
+    var tabs = this.getTabs();
+
+    return DOM.div({
+      className: 'tabbar'
+    },
+      DOM.div({
+        className: 'tabbar-main'
+      }, tabs.views),
+      DOM.div({
+        className: 'tabbar-bar'
+      }, tabs.tabs)
+    );
+  },
+
+  getTabs: function(){
     var views = [];
     var tabs = [];
 
@@ -51,7 +66,7 @@ var tabbar = React.createClass({
         throw new Error('Invalid view attribute for tab ' + tabName);
       }
 
-      // render the view given and wrap it, thats thew viewNode
+      // render the view given and wrap it, thats the viewNode
       viewNode = DOM.div({
         key: tabName+'-view',
         className: cx({
@@ -106,16 +121,10 @@ var tabbar = React.createClass({
       views.push(viewNode);
     }, this);
 
-    return DOM.div({
-      className: 'tabbar'
-    },
-      DOM.div({
-        className: 'tabbar-main'
-      }, views),
-      DOM.div({
-        className: 'tabbar-bar'
-      }, tabs)
-    );
+    return {
+      views: views,
+      tabs: tabs
+    };
   }
 });
 

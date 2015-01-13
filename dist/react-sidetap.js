@@ -39,6 +39,21 @@ var tabbar = React.createClass({
   },
 
   render: function(){
+    var tabs = this.getTabs();
+
+    return DOM.div({
+      className: 'tabbar'
+    },
+      DOM.div({
+        className: 'tabbar-main'
+      }, tabs.views),
+      DOM.div({
+        className: 'tabbar-bar'
+      }, tabs.tabs)
+    );
+  },
+
+  getTabs: function(){
     var views = [];
     var tabs = [];
 
@@ -52,7 +67,7 @@ var tabbar = React.createClass({
         throw new Error('Invalid view attribute for tab ' + tabName);
       }
 
-      // render the view given and wrap it, thats thew viewNode
+      // render the view given and wrap it, thats the viewNode
       viewNode = DOM.div({
         key: tabName+'-view',
         className: cx({
@@ -107,16 +122,10 @@ var tabbar = React.createClass({
       views.push(viewNode);
     }, this);
 
-    return DOM.div({
-      className: 'tabbar'
-    },
-      DOM.div({
-        className: 'tabbar-main'
-      }, views),
-      DOM.div({
-        className: 'tabbar-bar'
-      }, tabs)
-    );
+    return {
+      views: views,
+      tabs: tabs
+    };
   }
 });
 
@@ -890,14 +899,12 @@ module.exports = baseCreate;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js","lodash.noop":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash.noop/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js":[function(require,module,exports){
 module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash.isfunction/index.js":[function(require,module,exports){
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash.isfunction/index.js":[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1042,8 +1049,8 @@ module.exports = support;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.support/node_modules/lodash._isnative/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/index.js":[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1136,8 +1143,8 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 module.exports = keys;
 
 },{"lodash._isnative":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._isnative/index.js","lodash._shimkeys":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._shimkeys/index.js","lodash.isobject":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._isnative/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash._setbinddata/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._shimkeys/index.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash._basecreate/node_modules/lodash._isnative/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash._shimkeys/index.js":[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1178,8 +1185,8 @@ var shimKeys = function(object) {
 module.exports = shimKeys;
 
 },{"lodash._objecttypes":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash._objecttypes/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash.forown/node_modules/lodash.keys/node_modules/lodash.isobject/index.js":[function(require,module,exports){
-module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js")
-},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basebind/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/addons.js":[function(require,module,exports){
+module.exports=require("/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js")
+},{"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js":"/Users/contra/Projects/react-tabbar/node_modules/lodash.forEach/node_modules/lodash._basecreatecallback/node_modules/lodash.bind/node_modules/lodash._createwrapper/node_modules/lodash._basecreatewrapper/node_modules/lodash.isobject/index.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/addons.js":[function(require,module,exports){
 module.exports = require('./lib/ReactWithAddons');
 
 },{"./lib/ReactWithAddons":"/Users/contra/Projects/react-tabbar/node_modules/react/lib/ReactWithAddons.js"}],"/Users/contra/Projects/react-tabbar/node_modules/react/lib/AutoFocusMixin.js":[function(require,module,exports){
