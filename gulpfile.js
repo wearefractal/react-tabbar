@@ -29,7 +29,7 @@ var bundler = watchify(browserify('./src/index.js', {
   cache: bundleCache,
   packageCache: pkgCache,
   fullPaths: true,
-  standalone: 'react-sidetap',
+  standalone: 'react-tabbar',
   debug: true
 }));
 
@@ -46,7 +46,7 @@ var sampleBundler = watchify(browserify('./samples/sandbox/src/index.js', {
 gulp.task('js', function(){
   var browserifyStream = bundler.bundle()
     // browserify -> gulp transfer
-    .pipe(source('react-sidetap.js'))
+    .pipe(source('react-tabbar.js'))
     .pipe(buffer())
     .pipe(cached('js'))
     .pipe(sourcemaps.init({loadMaps: true}))
