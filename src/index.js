@@ -4,7 +4,7 @@ var React = require('react/addons');
 var cx = React.addons.classSet;
 var DOM = React.DOM;
 var PropTypes = React.PropTypes;
-var each = require('lodash.forEach');
+var each = require('lodash.foreach');
 
 var tabbar = React.createClass({
   displayName: 'TabBar',
@@ -22,7 +22,7 @@ var tabbar = React.createClass({
       activeTab: this.props.defaultTab
     };
   },
-  
+
   handleTabClick: function(tabName){
     // already active, ignore click
     if (this.state.activeTab === tabName) {
